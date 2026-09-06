@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>live-favicon — new-mail + OTP demo</title>
+
+<!-- Production usage (no build step, no npm install):
+<script src="https://unpkg.com/@live-favicon/core"></script>
+For local development in this repo, we load the workspace build instead: -->
+<script src="../../packages/core/dist/index.global.js"></script>
+
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #0b0d12;
+    --card: #12151c;
+    --border: #232733;
+    --text: #e7e9ee;
+    --muted: #8b93a3;
+    --accent: #6366F1;
+    --gmail-red: #EA4335;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    padding: 32px 20px 80px;
+  }
+  main { max-width: 640px; margin: 0 auto; }
+  h1 { font-size: 1.4rem; margin: 0 0 4px; }
+  p.sub { color: var(--muted); margin: 0 0 8px; line-height: 1.5; }
+  p.disclaimer { color: var(--muted); margin: 0 0 28px; font-size: 0.78rem; line-height: 1.5; }
+  section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px;
+    margin-bottom: 20px;
+  }
+  h2 { font-size: 1rem; margin: 0 0 4px; }
+  p.hint { color: var(--muted); font-size: 0.85rem; margin: 0 0 14px; }
+  code { background: #1c2029; padding: 2px 6px; border-radius: 4px; font-size: 0.85em; }
+
+  button {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 8px;
+    border: none;
+    background: var(--accent);
+    color: white;
+    cursor: pointer;
+  }
+  button:hover { filter: brightness(1.08); }
+  button:disabled { opacity: 0.5; cursor: default; }
+  button.ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-weight: 400;
+  }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  label.mute { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 0.85rem; cursor: pointer; margin-left: auto; }
+
+  .inbox { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-top: 16px; }
+  .mail-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    background: #171b24;
+    animation: pop-in 0.25s ease-out;
+  }
+  .mail-row:last-child { border-bottom: none; }
+  .mail-row .from { font-weight: 600; width: 130px; flex-shrink: 0; color: var(--gmail-red); }
+  .mail-row .subject { color: var(--text); flex: 1; }
+  .mail-row .subject b { font-weight: 700; }
+  .mail-row .time { color: var(--muted); font-size: 0.8rem; flex-shrink: 0; }
+  .empty { padding: 24px 16px; text-align: center; color: var(--muted); font-size: 0.9rem; }
+  @keyframes pop-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .otp-box { margin-top: 16px; }
+  .otp-box input {
+    width: 100%;
+    background: #1a1e28;
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 1.4rem;
+    letter-spacing: 0.3em;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .otp-box input.filled { border-color: #22C55E; color: #22C55E; }
+  #status { color: var(--muted); font-size: 0.85rem; min-height: 1.2em; margin-top: 10px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>New mail → icon change + sound + OTP autofill</h1>
+  <p class="sub">
+    A minimal inbox simulating what happens when a real email — including a
+    one-time verification code — lands while you're on another tab: the
+    favicon switches to a "new mail" icon, a chime plays, the tab title picks
+    up the unread count, and the code is pulled out of the message body into
+    the field below automatically, the way an OTP-autofill flow would.
+  </p>
+  <p class="disclaimer">
+    This is a self-contained simulation for demo purposes — it doesn't
+    connect to any real mailbox, and isn't affiliated with or endorsed by
+    Google/Gmail. The red-envelope styling is just a familiar reference
+    point for "new mail."
+  </p>
+
+  <section>
+    <h2>1. Receive mail</h2>
+    <p class="hint">
+      <code>favicon.define("new-mail", ..., &#123; sound: true &#125;)</code> once, then
+      <code>favicon.state("new-mail")</code> per incoming message.
+    </p>
+    <div class="row">
+      <button id="send-plain">Simulate incoming email</button>
+      <button id="send-otp">Simulate email with verification code</button>
+      <label class="mute">
+        <input type="checkbox" id="mute-toggle" />
+        Mute sound (<code>favicon.sound(false)</code>)
+      </label>
+    </div>
+
+    <div class="inbox" id="inbox">
+      <div class="empty" id="inbox-empty">No mail yet — inbox zero.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>2. Verification code</h2>
+    <p class="hint">Auto-filled the moment a code-carrying email "arrives" — no copy/paste.</p>
+    <div class="otp-box">
+      <input type="text" id="otp-input" placeholder="— — — — — —" readonly />
+    </div>
+  </section>
+
+  <section>
+    <h2>3. Clear</h2>
+    <p class="hint">Reading the inbox restores the original favicon and title.</p>
+    <button class="ghost" id="clear-btn">Mark all as read (favicon.reset())</button>
+    <div id="status">Idle.</div>
+  </section>
+</main>
+
+<script>
+  const favicon = LiveFavicon.default;
+  const { iconBadge } = LiveFavicon;
+
+  // One custom state, defined once: a red envelope glyph with a built-in
+  // chime attached. Nothing here is Gmail-specific — the same pattern works
+  // for a chat mention, a support-ticket reply, or an alarm.
+  favicon.define("new-mail", iconBadge("#EA4335", "✉"), { sound: true });
+
+  const inboxEl = document.getElementById("inbox");
+  const inboxEmptyEl = document.getElementById("inbox-empty");
+  const otpInput = document.getElementById("otp-input");
+  const statusEl = document.getElementById("status");
+  const muteToggle = document.getElementById("mute-toggle");
+
+  let unread = 0;
+
+  function setStatus(text) {
+    statusEl.textContent = text;
+  }
+
+  muteToggle.addEventListener("change", () => {
+    favicon.sound(!muteToggle.checked);
+    setStatus(`favicon.sound(${!muteToggle.checked})`);
+  });
+
+  function randomOtp() {
+    return String(Math.floor(100000 + Math.random() * 900000));
+  }
+
+  /** Extracts a 6-digit code from a message body — the same regex an
+   *  autofill helper would run against a real email/SMS body. */
+  function extractOtp(body) {
+    const match = body.match(/\b(\d{6})\b/);
+    return match ? match[1] : null;
+  }
+
+  function receiveMail({ from, subject, body }) {
+    unread += 1;
+
+    if (inboxEmptyEl) inboxEmptyEl.remove();
+    const row = document.createElement("div");
+    row.className = "mail-row";
+    row.innerHTML = `
+      <span class="from">${from}</span>
+      <span class="subject"><b>${subject}</b></span>
+      <span class="time">now</span>
+    `;
+    inboxEl.prepend(row);
+
+    // Icon change + chime, in one call.
+    favicon.state("new-mail");
+    favicon.badge(unread);
+    favicon.title(`(${unread}) Inbox`);
+    setStatus(`favicon.state("new-mail"); favicon.badge(${unread}); favicon.title("(${unread}) Inbox")`);
+
+    const code = extractOtp(body);
+    if (code) {
+      otpInput.value = code;
+      otpInput.classList.add("filled");
+      setStatus(`${statusEl.textContent} — OTP "${code}" extracted from message body and filled in`);
+    }
+  }
+
+  document.getElementById("send-plain").addEventListener("click", () => {
+    receiveMail({
+      from: "Priya",
+      subject: "Re: Thursday's sync — moved to 3pm",
+      body: "Hey, quick heads up — moved our sync to 3pm, same link. See you there!",
+    });
+  });
+
+  document.getElementById("send-otp").addEventListener("click", () => {
+    const code = randomOtp();
+    receiveMail({
+      from: "Accounts",
+      subject: "Your verification code",
+      body: `Your one-time verification code is ${code}. It expires in 10 minutes. If you didn't request this, ignore this email.`,
+    });
+  });
+
+  document.getElementById("clear-btn").addEventListener("click", () => {
+    unread = 0;
+    favicon.reset();
+    otpInput.value = "";
+    otpInput.classList.remove("filled");
+    setStatus("favicon.reset()");
+  });
+</script>
+</body>
+</html>

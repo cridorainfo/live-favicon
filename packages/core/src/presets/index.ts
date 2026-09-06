@@ -23,6 +23,13 @@ export interface Preset {
   animated: boolean;
   /** For pop-in states: stop the scheduler this long after activation. */
   settleAfterMs?: number;
+  /**
+   * Sound to play each time this state activates: `true` for the built-in
+   * synthesized chime, or a URL to play a custom audio file instead. Gated
+   * by the global `favicon.sound()` toggle. Only settable via
+   * `favicon.define()` — built-in states don't ship a default sound.
+   */
+  sound?: boolean | string;
 }
 
 export const presets: Record<AnimatedState, Preset> = {

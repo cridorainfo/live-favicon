@@ -5,6 +5,7 @@
 - [React API reference](./api-react.md) — `useFaviconState`, `useFaviconTask`
 - [Presets](./presets.md) — every built-in state, with a real render of each
 - [Custom images](./custom-images.md) — bring your own PNG or SVG instead of (or alongside) the built-in shapes
+- [Sound](./sound.md) — play a chime or your own audio when a state activates, plus the global mute switch
 - [Background tabs](./background-tabs.md) — how the scheduler behaves when the tab isn't visible, and why
 - [Accessibility](./accessibility.md) — reduced motion, color-independence, and the limits of a favicon as a status channel
 
@@ -13,4 +14,5 @@
 Runnable, framework-specific example projects live in [`../examples`](../examples):
 
 - [`examples/vanilla`](../examples/vanilla) — zero-build, plain `<script>` tag usage
+- [`examples/vanilla/gmail-inbox.html`](../examples/vanilla/gmail-inbox.html) — new-mail icon change + sound + OTP-from-email autofill
 - [`examples/react`](../examples/react) — Vite + React + TypeScript, using `@live-favicon/react`

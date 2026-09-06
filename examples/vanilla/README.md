@@ -1,7 +1,12 @@
 # Vanilla example
 
-A zero-build reference page exercising every `live-favicon` method: all
-states, `progress()`, `badge()`, `title()`, `task()`, and `reset()`.
+- **`index.html`** — a zero-build reference page exercising every
+  `live-favicon` method: all states, `progress()`, `badge()`, `title()`,
+  `task()`, and `reset()`.
+- **`gmail-inbox.html`** — a "new mail arrives" scenario: `define()`'d icon +
+  built-in chime, `badge()`, `title()`, and a one-time verification code
+  auto-extracted from the incoming message body. See
+  [sound.md](../../docs/sound.md) for the sound API this demo exercises.
 
 ## Run it
 

@@ -78,6 +78,18 @@ title; `reset()` restores it. Calling `title()` again before `reset()` does
 **not** re-capture — the original is only ever the value from before your
 first call.
 
+## `favicon.sound(enabled?)`
+
+```ts
+favicon.sound(enabled?: boolean): this // default: true
+```
+
+Global on/off switch for the `sound` option on `define()`d states (see
+below, and [sound.md](./sound.md) for the full picture). `favicon.sound(false)`
+silences every state's declared sound until re-enabled; it doesn't affect the
+icon or title. Like a defined state, this setting is **not** cleared by
+`reset()` — it's a standing preference.
+
 ## `favicon.task(promise, options?)`
 
 ```ts
@@ -113,6 +125,7 @@ favicon.define(name: string, renderer: PresetRenderer, options?: DefineOptions):
 interface DefineOptions {
   animated?: boolean;      // default true
   settleAfterMs?: number;  // see below
+  sound?: boolean | string; // see below, and sound.md
 }
 ```
 
@@ -168,6 +181,19 @@ scheduler" doesn't work reliably in a background tab.
 `"idle"`) — built-ins can't be redefined. Calling `state()` with a name
 that was never `define()`'d logs a console warning and does nothing,
 rather than failing silently.
+
+Pass `sound: true` to also play a short built-in chime every time the state
+activates, or a URL string to play your own audio file instead:
+
+```js
+favicon.define("new-mail", iconBadge("#EA4335", "✉"), { sound: true });
+favicon.state("new-mail"); // icon changes AND the chime plays
+```
+
+No built-in state ships with a sound — it's opt-in per `define()`'d state,
+and gated by the global [`favicon.sound()`](#faviconsoundenabled) toggle.
+See [sound.md](./sound.md) for the built-in-chime-vs-custom-audio tradeoff
+and the browser autoplay caveat.
 
 ## `favicon.reset()`
 
