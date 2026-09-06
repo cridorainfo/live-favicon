@@ -2,7 +2,7 @@ import { Scheduler } from "./core/scheduler";
 import { renderFrame, FAVICON_SIZE } from "./renderer/canvas";
 import { setFaviconDataUrl, resetFavicon } from "./renderer/favicon-link";
 import { setTitle, resetTitle } from "./renderer/title";
-import { playSound, setSoundEnabled } from "./renderer/sound";
+import { ensureAudioUnlock, playSound, setSoundEnabled } from "./renderer/sound";
 import { presets, makeProgress, spinner, pulse, iconBadge, type Preset } from "./presets";
 import type { FaviconState, PresetRenderer, TaskOptions } from "./types";
 
@@ -18,7 +18,11 @@ export interface DefineOptions {
    * Play a sound every time this state activates: `true` for the built-in
    * synthesized chime, or a URL string to play your own audio file instead.
    * Silenced globally by `favicon.sound(false)`. Browsers require a prior
-   * user gesture on the page before audio can play — see docs/sound.md.
+   * user gesture on the page before audio can play — the first `sound`-
+   * carrying `define()` call arms a one-time listener that unlocks audio on
+   * the page's next click/keypress/tap, and a sound requested before that
+   * happens is replayed once the gesture lands, rather than lost — see
+   * docs/sound.md.
    */
   sound?: boolean | string;
 }
@@ -59,6 +63,7 @@ class LiveFavicon {
     if (name === "idle" || presets[name as keyof typeof presets]) {
       throw new Error(`live-favicon: "${name}" is a built-in state and can't be redefined via define().`);
     }
+    if (options.sound) ensureAudioUnlock();
     this.customPresets.set(name, {
       render: renderer,
       animated: options.animated ?? true,

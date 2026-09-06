@@ -137,4 +137,123 @@ describe("sound", () => {
       expect(() => sound.playSound("https://example.com/chime-d.mp3")).not.toThrow();
     });
   });
+
+  describe("ensureAudioUnlock() — autoplay recovery", () => {
+    it("arms exactly one listener per gesture type", () => {
+      const addSpy = vi.spyOn(document, "addEventListener");
+
+      sound.ensureAudioUnlock();
+
+      expect(addSpy.mock.calls.map((c) => c[0]).sort()).toEqual(["keydown", "pointerdown", "touchstart"]);
+    });
+
+    it("only installs once even if called repeatedly", () => {
+      const addSpy = vi.spyOn(document, "addEventListener");
+
+      sound.ensureAudioUnlock();
+      sound.ensureAudioUnlock();
+      sound.ensureAudioUnlock();
+
+      expect(addSpy).toHaveBeenCalledTimes(3);
+    });
+
+    /**
+     * A mock whose `resume()` only actually succeeds once a gesture is
+     * "in progress" (`gestureActive`) — real browsers behave the same way:
+     * resume() called outside a gesture's call stack stays suspended, resume()
+     * called synchronously inside one succeeds. This lets the test tell apart
+     * "queued because blocked" from "played immediately."
+     */
+    function makeGestureGatedContext() {
+      let gestureActive = false;
+      const ctx = new MockAudioContext();
+      ctx.state = "suspended";
+      ctx.resume = vi.fn(() => {
+        if (!gestureActive) return new Promise<void>(() => {}); // never resolves
+        ctx.state = "running";
+        return Promise.resolve();
+      });
+      return { ctx, setGestureActive: (v: boolean) => (gestureActive = v) };
+    }
+
+    it("queues a chime requested before any gesture, and replays it on the first gesture", async () => {
+      const { ctx, setGestureActive } = makeGestureGatedContext();
+      vi.stubGlobal("AudioContext", vi.fn(() => ctx));
+      sound.ensureAudioUnlock();
+
+      sound.playSound(true);
+      expect(ctx.createOscillator).not.toHaveBeenCalled(); // blocked — queued, not lost
+
+      setGestureActive(true);
+      document.dispatchEvent(new Event("pointerdown"));
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(ctx.createOscillator).toHaveBeenCalledTimes(2);
+    });
+
+    it("queues a custom-URL sound requested before any gesture, and replays it on the first gesture", async () => {
+      let gestureActive = false;
+      const play = vi.fn(() => (gestureActive ? Promise.resolve() : Promise.reject(new Error("blocked"))));
+      const AudioCtor = vi.fn(function (this: { play: typeof play; currentTime: number; src: string }, src: string) {
+        this.src = src;
+        this.currentTime = 0;
+        this.play = play;
+      });
+      vi.stubGlobal("Audio", AudioCtor);
+      sound.ensureAudioUnlock();
+
+      sound.playSound("https://example.com/chime-e.mp3");
+      await Promise.resolve(); // let the rejection land and queue the pending sound
+      expect(play).toHaveBeenCalledTimes(1);
+
+      gestureActive = true;
+      document.dispatchEvent(new Event("keydown"));
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(play).toHaveBeenCalledTimes(2); // the queued retry
+    });
+
+    it("only remembers the single most recent blocked sound", async () => {
+      // Both mocks gate on the same flag, so neither "plays for real" until
+      // the simulated gesture — otherwise the URL sound would succeed
+      // immediately and never actually become the pending one.
+      let gestureActive = false;
+      const ctx = new MockAudioContext();
+      ctx.state = "suspended";
+      ctx.resume = vi.fn(() => {
+        if (!gestureActive) return new Promise<void>(() => {});
+        ctx.state = "running";
+        return Promise.resolve();
+      });
+      vi.stubGlobal("AudioContext", vi.fn(() => ctx));
+
+      const play = vi.fn(() => (gestureActive ? Promise.resolve() : Promise.reject(new Error("blocked"))));
+      const AudioCtor = vi.fn(function (this: { play: typeof play; currentTime: number; src: string }, src: string) {
+        this.src = src;
+        this.currentTime = 0;
+        this.play = play;
+      });
+      vi.stubGlobal("Audio", AudioCtor);
+      sound.ensureAudioUnlock();
+
+      sound.playSound(true); // queued...
+      sound.playSound("https://example.com/chime-f.mp3"); // ...then overwrites it
+      await Promise.resolve(); // let the URL's rejection land
+
+      gestureActive = true;
+      document.dispatchEvent(new Event("touchstart"));
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(ctx.createOscillator).not.toHaveBeenCalled(); // the chime was dropped
+      expect(play).toHaveBeenCalledTimes(2); // 1st attempt (blocked) + the queued retry
+    });
+
+    it("does nothing when there's no document (SSR-safe, no throw)", async () => {
+      vi.stubGlobal("document", undefined);
+      expect(() => sound.ensureAudioUnlock()).not.toThrow();
+    });
+  });
 });

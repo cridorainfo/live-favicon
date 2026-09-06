@@ -78,12 +78,31 @@ subject line, or a one-time code) rather than a generic "you have mail."
 ## Browser autoplay limits
 
 Browsers block both the Web Audio API and `<audio>` playback until the page
-has seen a user gesture (a click, a keypress, a tap). If `state()` activates
-a sound-carrying state before the user has interacted with the page at all
-— e.g. a WebSocket message that arrives one second after page load — the
-icon still changes, but the sound may not audibly play. There's no reliable
-way to work around this from a library; `live-favicon` fails silently in
-that case rather than throwing, the same way it no-ops when there's no
-`document` at all. In practice this is rarely an issue: by the time a real
-notification arrives, the user has almost always clicked or typed something
-on the page already.
+has seen a user gesture (a click, a keypress, a tap) — a deliberate
+anti-annoyance policy, not something a library can override. `live-favicon`
+does two things about it, rather than just failing silently:
+
+1. **It unlocks proactively.** The first `define()` call with a `sound`
+   option arms one-time listeners for the page's next click/keypress/tap,
+   and uses that exact gesture to create/resume the audio context —
+   synchronously inside the gesture's call stack, which is what actually
+   satisfies stricter browsers (notably Safari). Since almost every real app
+   sees an interaction within the first few seconds, the context is
+   typically already unlocked by the time a real notification arrives, well
+   before any sound is actually requested.
+2. **It doesn't lose a sound that's genuinely too early.** If a
+   sound-carrying state activates before any gesture at all — e.g. a
+   WebSocket message that arrives one second after page load, before the
+   user has touched anything — the icon and title still update immediately,
+   and the sound is remembered and replayed the instant the user's first
+   interaction lands, instead of being silently dropped. Only the single
+   most recent blocked sound is kept — if several notifications stack up
+   before that first click, you get one catch-up chime on it, not a burst of
+   stale ones.
+
+None of this makes audio play with *zero* gesture ever — that's not
+possible, and antivirus for eardrums is a reasonable thing for browsers to
+enforce. What it does is close the gap between "the user hasn't clicked
+anything at all since the page loaded" (rare, and now handled) and "the
+user has clicked something, so audio should just work" (the common case,
+now unlocked ahead of time instead of on the first attempt).

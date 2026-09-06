@@ -193,7 +193,9 @@ favicon.state("new-mail"); // icon changes AND the chime plays
 No built-in state ships with a sound — it's opt-in per `define()`'d state,
 and gated by the global [`favicon.sound()`](#faviconsoundenabled) toggle.
 See [sound.md](./sound.md) for the built-in-chime-vs-custom-audio tradeoff
-and the browser autoplay caveat.
+and how browser autoplay restrictions are handled (proactive unlock on the
+page's first gesture, plus replay-once-unlocked for anything requested too
+early).
 
 ## `favicon.reset()`
 

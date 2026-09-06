@@ -151,4 +151,20 @@ describe("favicon.define() + sound", () => {
 
     expect(ctx.createOscillator).not.toHaveBeenCalled();
   });
+
+  it("defining a sound-carrying state arms the autoplay-unlock listeners", () => {
+    const addSpy = vi.spyOn(document, "addEventListener");
+
+    favicon.define("new-mail", iconBadge("#EA4335", "✉"), { sound: true });
+
+    expect(addSpy.mock.calls.map((c) => c[0]).sort()).toEqual(["keydown", "pointerdown", "touchstart"]);
+  });
+
+  it("defining a state without sound never touches the unlock listeners", () => {
+    const addSpy = vi.spyOn(document, "addEventListener");
+
+    favicon.define("silent-mail", iconBadge("#EA4335", "✉"));
+
+    expect(addSpy).not.toHaveBeenCalled();
+  });
 });
