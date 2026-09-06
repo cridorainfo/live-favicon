@@ -20,6 +20,20 @@ instructions and full API docs.
 | [`live-favicon`](./packages/core)                  | Core library — zero dependencies, ~3KB gzipped |
 | [`@live-favicon/react`](./packages/react)          | React hooks (`useFaviconState`, `useFaviconTask`) |
 
+## Docs
+
+- [Getting started](./docs/getting-started.md)
+- [Core API reference](./docs/api-core.md)
+- [React API reference](./docs/api-react.md)
+- [Presets](./docs/presets.md) — every built-in state, with a real render of each
+- [Background tabs](./docs/background-tabs.md) — how the scheduler behaves when the tab isn't visible
+- [Accessibility](./docs/accessibility.md)
+
+## Examples
+
+- [`examples/vanilla`](./examples/vanilla) — zero-build, plain `<script>` tag usage; a reference page exercising every method
+- [`examples/react`](./examples/react) — Vite + React + TypeScript, using `@live-favicon/react`
+
 ## Demo
 
 ```bash

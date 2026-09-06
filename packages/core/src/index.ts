@@ -46,7 +46,16 @@ class LiveFavicon {
     this.paint(preset.render, 0); // immediate first frame, so there's no blank flash before the first tick
     this.scheduler.start();
     if (preset.settleAfterMs) {
-      this.settleTimer = setTimeout(() => this.scheduler.stop(), preset.settleAfterMs);
+      // Force-paint a frame safely past the pop-in duration before stopping,
+      // rather than just freezing on whatever the scheduler last rendered.
+      // In a background tab the scheduler ticks at ~1/s, which is *longer*
+      // than this settle delay (~0.5s) - without this, the animation would
+      // freeze on its blank starting frame and the checkmark/X would never
+      // actually appear for a user who switched away before it resolved.
+      this.settleTimer = setTimeout(() => {
+        this.scheduler.stop();
+        this.paint(preset.render, 1);
+      }, preset.settleAfterMs);
     }
     return this;
   }

@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>live-favicon — vanilla example</title>
+
+<!-- Production usage (no build step, no npm install):
+<script src="https://unpkg.com/live-favicon"></script>
+For local development in this repo, we load the workspace build instead: -->
+<script src="../../packages/core/dist/index.global.js"></script>
+
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #0b0d12;
+    --card: #12151c;
+    --border: #232733;
+    --text: #e7e9ee;
+    --muted: #8b93a3;
+    --accent: #6366F1;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    padding: 32px 20px 80px;
+  }
+  main { max-width: 720px; margin: 0 auto; }
+  h1 { font-size: 1.4rem; margin: 0 0 4px; }
+  p.sub { color: var(--muted); margin: 0 0 32px; line-height: 1.5; }
+  section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px;
+    margin-bottom: 20px;
+  }
+  h2 { font-size: 1rem; margin: 0 0 4px; }
+  p.hint { color: var(--muted); font-size: 0.85rem; margin: 0 0 14px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 8px;
+  }
+  button {
+    padding: 9px 12px;
+    font-size: 0.85rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: #1a1e28;
+    color: var(--text);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  button.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+    font-weight: 600;
+  }
+  .row { display: flex; gap: 10px; align-items: center; }
+  input[type="range"] { flex: 1; }
+  input[type="number"], input[type="text"] {
+    background: #1a1e28;
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 0.9rem;
+    width: 100%;
+  }
+  .preview {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .preview img {
+    width: 64px;
+    height: 64px;
+    image-rendering: pixelated;
+    background:
+      linear-gradient(45deg, #222 25%, transparent 25%, transparent 75%, #222 75%, #222),
+      linear-gradient(45deg, #222 25%, transparent 25%, transparent 75%, #222 75%, #222);
+    background-size: 12px 12px;
+    background-position: 0 0, 6px 6px;
+    border-radius: 6px;
+  }
+  code { background: #1c2029; padding: 2px 6px; border-radius: 4px; font-size: 0.85em; }
+  #status { color: var(--muted); font-size: 0.85rem; min-height: 1.2em; }
+</style>
+</head>
+<body>
+<main>
+  <h1>live-favicon — reference page</h1>
+  <p class="sub">
+    Every method, in one place. Watch the browser tab, or the mirrored
+    preview below (browsers don't expose a way to read what's literally in
+    the tab strip, so this preview just mirrors the same <code>&lt;link&gt;</code>
+    element's href for convenience on this page).
+  </p>
+
+  <section>
+    <h2>Live preview</h2>
+    <p class="hint">Mirrors the current favicon &lt;link&gt; href, scaled up.</p>
+    <div class="preview">
+      <img id="preview" alt="current favicon" />
+      <span id="status">Idle.</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>States</h2>
+    <p class="hint"><code>favicon.state(name)</code> — or the matching shortcut method</p>
+    <div class="grid" id="state-buttons"></div>
+  </section>
+
+  <section>
+    <h2>Progress</h2>
+    <p class="hint"><code>favicon.progress(percent)</code></p>
+    <div class="row">
+      <input type="range" id="progress-slider" min="0" max="100" value="50" />
+      <span id="progress-value" style="width:3.5em">50%</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Badge</h2>
+    <p class="hint"><code>favicon.badge(count)</code> — composes with the current state or progress ring</p>
+    <input type="number" id="badge-input" min="0" max="999" value="3" />
+  </section>
+
+  <section>
+    <h2>Title</h2>
+    <p class="hint"><code>favicon.title(text)</code></p>
+    <input type="text" id="title-input" placeholder="Type to set the tab title..." />
+  </section>
+
+  <section>
+    <h2><code>task()</code></h2>
+    <p class="hint">Wraps a promise: sets a start state, awaits it, then success or error automatically.</p>
+    <div class="row">
+      <button class="primary" id="task-success">Run task (resolves)</button>
+      <button id="task-error">Run task (rejects)</button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Reset</h2>
+    <p class="hint"><code>favicon.reset()</code> — restores the original favicon and title</p>
+    <button id="reset-btn">Reset</button>
+  </section>
+</main>
+
+<script>
+  const favicon = LiveFavicon.default;
+  const STATES = [
+    "thinking", "loading", "processing", "syncing", "reconnecting",
+    "uploading", "downloading", "notification", "mention", "message",
+    "success", "error", "warning", "offline",
+  ];
+
+  const buttonsEl = document.getElementById("state-buttons");
+  for (const name of STATES) {
+    const btn = document.createElement("button");
+    btn.textContent = name;
+    btn.addEventListener("click", () => {
+      favicon.state(name);
+      setStatus(`favicon.state("${name}")`);
+    });
+    buttonsEl.appendChild(btn);
+  }
+
+  const statusEl = document.getElementById("status");
+  function setStatus(text) {
+    statusEl.textContent = text;
+  }
+
+  // Mirror the actual <link rel="icon"> href onto a visible <img>, purely so
+  // this page is useful without staring at the tiny real tab favicon.
+  const previewImg = document.getElementById("preview");
+  setInterval(() => {
+    const link = document.querySelector('link[data-live-favicon="true"]');
+    if (link && previewImg.src !== link.href) previewImg.src = link.href;
+  }, 100);
+
+  const slider = document.getElementById("progress-slider");
+  const progressValue = document.getElementById("progress-value");
+  slider.addEventListener("input", () => {
+    const pct = Number(slider.value);
+    progressValue.textContent = `${pct}%`;
+    favicon.progress(pct);
+    setStatus(`favicon.progress(${pct})`);
+  });
+
+  document.getElementById("badge-input").addEventListener("input", (e) => {
+    const count = Number(e.target.value) || 0;
+    favicon.badge(count);
+    setStatus(`favicon.badge(${count})`);
+  });
+
+  document.getElementById("title-input").addEventListener("input", (e) => {
+    favicon.title(e.target.value || document.title);
+    setStatus(`favicon.title(${JSON.stringify(e.target.value)})`);
+  });
+
+  function fakeAsync(shouldFail) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => (shouldFail ? reject(new Error("simulated failure")) : resolve("ok")), 1200);
+    });
+  }
+
+  document.getElementById("task-success").addEventListener("click", async () => {
+    setStatus("favicon.task(...) pending...");
+    await favicon.task(fakeAsync(false));
+    setStatus("favicon.task(...) resolved -> success state");
+  });
+
+  document.getElementById("task-error").addEventListener("click", async () => {
+    setStatus("favicon.task(...) pending...");
+    try {
+      await favicon.task(fakeAsync(true));
+    } catch (err) {
+      setStatus(`favicon.task(...) rejected -> error state (${err.message})`);
+    }
+  });
+
+  document.getElementById("reset-btn").addEventListener("click", () => {
+    favicon.reset();
+    setStatus("favicon.reset()");
+  });
+</script>
+</body>
+</html>

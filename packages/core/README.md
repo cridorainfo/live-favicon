@@ -151,6 +151,16 @@ From the repo root, run `npm run build`, then open
 [`demo/index.html`](../../demo/index.html) — click "Start task," then switch
 to another tab and watch this one instead.
 
+## Full docs
+
+- [Getting started](../../docs/getting-started.md)
+- [Core API reference](../../docs/api-core.md)
+- [Presets](../../docs/presets.md) — a real render of every state
+- [Background tabs](../../docs/background-tabs.md)
+- [Accessibility](../../docs/accessibility.md)
+- [`examples/vanilla`](../../examples/vanilla) — a reference page exercising every method
+- [`examples/react`](../../examples/react) — Vite + React + TypeScript example
+
 ## License
 
 MIT
