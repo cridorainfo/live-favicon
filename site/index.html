@@ -224,34 +224,26 @@
     background: var(--card);
     border: 2px solid var(--border);
     border-radius: 14px;
-    padding: 20px;
+    padding: 22px;
+    text-align: center;
     box-shadow: var(--shadow-sm);
   }
-  .showcase-tab {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: var(--bg-alt);
-    border: 2px solid var(--border);
-    border-radius: 8px;
-    padding: 8px 12px;
-    margin-bottom: 14px;
+  .showcase-canvas {
+    display: block;
+    width: 96px; height: 96px; margin: 0 auto 16px;
+    border-radius: 18px; border: 2px solid var(--border);
+    background:
+      linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee),
+      linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee);
+    background-size: 14px 14px; background-position: 0 0, 7px 7px;
   }
-  .showcase-tab canvas { width: 22px; height: 22px; flex-shrink: 0; }
-  .showcase-tab-label { font-size: 0.8rem; font-weight: 600; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .showcase-card h3 { font-size: 1rem; margin-bottom: 6px; }
   .showcase-caption { color: var(--muted); font-size: 0.85rem; font-weight: 500; margin: 0; line-height: 1.5; }
-  .showcase-stage {
-    display: inline-block;
-    margin-top: 12px;
-    font-family: ui-monospace, monospace;
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 3px 10px;
-    border-radius: 999px;
-    border: 2px solid var(--border);
-    background: var(--yellow-soft);
+  .showcase-disclaimer {
+    background: var(--card); border: 2px solid var(--border); border-radius: 14px;
+    box-shadow: var(--shadow-sm); padding: 18px 22px; margin-top: 24px; font-size: 0.88rem; line-height: 1.6;
   }
+  .showcase-disclaimer strong { color: var(--coral); }
   .card h3 { font-size: 1.05rem; margin-bottom: 8px; }
   .card p { color: var(--muted); font-size: 0.92rem; font-weight: 500; margin: 0; }
 
@@ -337,7 +329,6 @@
       <a href="#demo">Demo</a>
       <a href="#get-started">Get started</a>
       <a href="https://github.com/cridorainfo/live-favicon/tree/main/docs" target="_blank" rel="noopener">Docs</a>
-      <a href="./gallery.html">Gallery</a>
       <a href="https://github.com/cridorainfo/live-favicon" target="_blank" rel="noopener">GitHub</a>
     </nav>
   </div>
@@ -417,16 +408,22 @@
   <!-- ============ SHOWCASE ============ -->
   <section id="showcase" class="tight">
     <div class="wrap">
-      <p class="eyebrow">How real apps would use this</p>
+      <p class="eyebrow">Fan-made, just for fun</p>
       <h2>Every card below is live — and running on its own state.</h2>
       <p class="section-sub">
-        Not mockups: each little tab icon is rendered right now, in your
-        browser, from the exact same <code>spinner()</code> / <code>iconBadge()</code>
-        building blocks any app can <code>favicon.define()</code> for
-        themselves — cycling through what that product's own real waiting
-        moment looks like.
+        Not mockups: each icon is rendered right now, in your browser, from
+        a plain <code>favicon.define()</code> renderer — proof the same
+        tiny canvas that shows "thinking..." can draw pretty much anything
+        you're willing to code.
       </p>
       <div class="showcase-grid" id="showcase-grid"></div>
+      <div class="showcase-disclaimer">
+        <strong>Not affiliated with, endorsed by, or sponsored by any brand
+        shown above.</strong> These are unofficial, fan-made visual homages —
+        brand-evocative colors and shapes, not traced logos or official
+        assets — built purely to demonstrate what a custom
+        <code>favicon.define()</code> renderer can draw.
+      </div>
     </div>
   </section>
 
@@ -579,165 +576,294 @@ useFaviconState(status === <span class="str">"done"</span> ? <span class="str">"
 <script src="assets/js/live-favicon.global.js"></script>
 <script>
   const favicon = LiveFavicon.default;
-  const { spinner, iconBadge } = LiveFavicon;
-
   // ---- Showcase cards ----
-  // Each card gets its own <canvas> and drives it directly with the exact
-  // same exported spinner()/iconBadge() functions favicon.define() uses —
-  // no data-URL favicon involved, since only one of those can exist per
-  // page. This is what it looks like to build one of these for real.
-  const BRAND_GREEN_CHATGPT = "#10A37F";
-  const BRAND_CLAY_CLAUDE = "#D97757";
-  const BRAND_RED_YOUTUBE = "#FF0000";
-  const BRAND_PURPLE_FIGMA = "#A259FF";
-  const BRAND_PURPLE_CANVA = "#8B3DFF";
-  const BRAND_INK_GITHUB = "#24292F";
-  const BRAND_INK_VERCEL = "#000000";
-  const BRAND_INK_NOTION = "#37352F";
-  const BRAND_BLUE_DROPBOX = "#0061FF";
-  const BRAND_BLUE_ZOOM = "#2D8CFF";
-  const SUCCESS_GREEN = "#1DB954";
+  // Fan-made homages to real product icons. Each is a plain PresetRenderer
+  // — ({ ctx, size, t }) => {} — the exact same signature favicon.define()
+  // expects. Every card drives its own <canvas> directly and loops forever;
+  // nothing here is a video or a sprite sheet.
+
+  function renderBMW({ ctx, size, t }) {
+    const cx = size / 2, cy = size / 2;
+    const outerR = size * 0.46;
+
+    ctx.strokeStyle = "#94A3B8";
+    ctx.lineWidth = size * 0.03;
+    const spokes = 5;
+    for (let i = 0; i < spokes; i++) {
+      const angle = t * 2.2 + (i / spokes) * Math.PI * 2;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + Math.cos(angle) * outerR, cy + Math.sin(angle) * outerR);
+      ctx.stroke();
+    }
+    ctx.strokeStyle = "#1E293B";
+    ctx.lineWidth = size * 0.07;
+    ctx.beginPath();
+    ctx.arc(cx, cy, outerR, 0, Math.PI * 2);
+    ctx.stroke();
+
+    const badgeR = size * 0.27;
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.arc(cx, cy, badgeR, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#0066B1";
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, badgeR, -Math.PI / 2, 0);
+    ctx.closePath();
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, badgeR, Math.PI / 2, Math.PI);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = "#0f172a";
+    ctx.lineWidth = size * 0.015;
+    ctx.beginPath();
+    ctx.arc(cx, cy, badgeR, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  function drawDrumstick(ctx, x, y, angle, flip, size) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+    if (flip) ctx.scale(-1, 1);
+    ctx.fillStyle = "#C1440E";
+    ctx.beginPath();
+    ctx.ellipse(0, 0, size * 0.16, size * 0.1, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#F5E9DA";
+    ctx.fillRect(size * 0.1, -size * 0.025, size * 0.12, size * 0.05);
+    ctx.restore();
+  }
+
+  function renderChickenLegs({ ctx, size, t }) {
+    const cx = size / 2, cy = size / 2;
+    const cycle = 1.4;
+    const phase = (t % cycle) / cycle;
+    const swing = Math.sin(phase * Math.PI);
+    const gap = (1 - swing) * size * 0.2 + size * 0.05;
+    drawDrumstick(ctx, cx - gap, cy, -0.3, false, size);
+    drawDrumstick(ctx, cx + gap, cy, Math.PI + 0.3, true, size);
+  }
+
+  function lerp(a, b, f) { return a + (b - a) * f; }
+  function lerpColor(hexA, hexB, f) {
+    const a = [1, 3, 5].map((i) => parseInt(hexA.slice(i, i + 2), 16));
+    const b = [1, 3, 5].map((i) => parseInt(hexB.slice(i, i + 2), 16));
+    const c = a.map((v, i) => Math.round(lerp(v, b[i], f)));
+    return `rgb(${c[0]},${c[1]},${c[2]})`;
+  }
+
+  function renderSpicyBurger({ ctx, size, t }) {
+    const cx = size / 2, cy = size / 2;
+    const heat = (Math.sin(t * 1.4) + 1) / 2;
+
+    ctx.fillStyle = "#E8A33D";
+    ctx.beginPath();
+    ctx.ellipse(cx, cy + size * 0.16, size * 0.26, size * 0.09, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = lerpColor("#7B3F00", "#B91C1C", heat);
+    ctx.beginPath();
+    ctx.ellipse(cx, cy + size * 0.04, size * 0.24, size * 0.07, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#22C55E";
+    ctx.fillRect(cx - size * 0.22, cy - size * 0.02, size * 0.44, size * 0.03);
+
+    ctx.fillStyle = "#F0B94F";
+    ctx.beginPath();
+    ctx.ellipse(cx, cy - size * 0.08, size * 0.25, size * 0.14, 0, Math.PI, Math.PI * 2);
+    ctx.fill();
+
+    if (heat > 0.55) {
+      const flicker = (heat - 0.55) / 0.45;
+      ctx.fillStyle = `rgba(249, 115, 22, ${flicker})`;
+      for (const dx of [-0.14, 0, 0.14]) {
+        ctx.beginPath();
+        ctx.moveTo(cx + size * dx, cy - size * 0.22);
+        ctx.lineTo(cx + size * (dx - 0.03), cy - size * 0.32);
+        ctx.lineTo(cx + size * (dx + 0.03), cy - size * 0.32);
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
+  }
+
+  function renderSpotify({ ctx, size, t }) {
+    const cx = size / 2, cy = size / 2;
+    ctx.fillStyle = "#1DB954";
+    ctx.beginPath();
+    ctx.arc(cx, cy, size * 0.46, 0, Math.PI * 2);
+    ctx.fill();
+
+    const bars = 3;
+    const barW = size * 0.09;
+    const gap = size * 0.05;
+    const baseX = cx - ((bars - 1) * (barW + gap)) / 2;
+    for (let i = 0; i < bars; i++) {
+      const h = (0.25 + 0.55 * Math.abs(Math.sin(t * 6 + i * 1.3))) * size * 0.4;
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(baseX + i * (barW + gap), cy + size * 0.2 - h, barW, h);
+    }
+  }
+
+  function roundRectPath(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  function renderYouTube({ ctx, size, t }) {
+    const cycle = 3.2;
+    const phase = (t % cycle) / cycle;
+    const showingAd = phase > 0.6 && phase < 0.85;
+    const cx = size / 2, cy = size / 2;
+
+    roundRectPath(ctx, cx - size * 0.42, cy - size * 0.3, size * 0.84, size * 0.6, size * 0.12);
+    ctx.fillStyle = showingAd ? "#EAB308" : "#FF0000";
+    ctx.fill();
+
+    if (showingAd) {
+      ctx.fillStyle = "#111827";
+      ctx.font = `bold ${size * 0.24}px system-ui, sans-serif`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("AD", cx, cy);
+    } else {
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.moveTo(cx - size * 0.1, cy - size * 0.16);
+      ctx.lineTo(cx - size * 0.1, cy + size * 0.16);
+      ctx.lineTo(cx + size * 0.18, cy);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    const subPhase = (t % 1.6) / 1.6;
+    if (subPhase < 0.4) {
+      const a = 1 - subPhase / 0.4;
+      ctx.fillStyle = `rgba(255,255,255,${a})`;
+      ctx.font = `bold ${size * 0.16}px system-ui, sans-serif`;
+      ctx.textAlign = "center";
+      ctx.fillText("+1", cx + size * 0.32, cy - size * 0.28 - subPhase * size * 0.15);
+    }
+  }
+
+  function renderRolex({ ctx, size }) {
+    const cx = size / 2, cy = size / 2;
+    const r = size * 0.44;
+
+    ctx.fillStyle = "#046A38";
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "#D4AF37";
+    ctx.lineWidth = size * 0.06;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.strokeStyle = "#D4AF37";
+    ctx.lineWidth = size * 0.018;
+    for (let i = 0; i < 12; i++) {
+      const a = (i / 12) * Math.PI * 2;
+      ctx.beginPath();
+      ctx.moveTo(cx + Math.cos(a) * r * 0.76, cy + Math.sin(a) * r * 0.76);
+      ctx.lineTo(cx + Math.cos(a) * r * 0.62, cy + Math.sin(a) * r * 0.62);
+      ctx.stroke();
+    }
+
+    const now = new Date();
+    const hours = now.getHours() % 12;
+    const minutes = now.getMinutes();
+    const seconds = now.getSeconds();
+    const ms = now.getMilliseconds();
+
+    const secAngle = ((seconds + ms / 1000) / 60) * Math.PI * 2 - Math.PI / 2;
+    const minAngle = ((minutes + seconds / 60) / 60) * Math.PI * 2 - Math.PI / 2;
+    const hourAngle = ((hours + minutes / 60) / 12) * Math.PI * 2 - Math.PI / 2;
+
+    ctx.lineCap = "round";
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = size * 0.035;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(hourAngle) * r * 0.45, cy + Math.sin(hourAngle) * r * 0.45);
+    ctx.stroke();
+
+    ctx.lineWidth = size * 0.03;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(minAngle) * r * 0.62, cy + Math.sin(minAngle) * r * 0.62);
+    ctx.stroke();
+
+    ctx.strokeStyle = "#D4AF37";
+    ctx.lineWidth = size * 0.015;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(secAngle) * r * 0.68, cy + Math.sin(secAngle) * r * 0.68);
+    ctx.stroke();
+
+    ctx.fillStyle = "#D4AF37";
+    ctx.beginPath();
+    ctx.arc(cx, cy, size * 0.04, 0, Math.PI * 2);
+    ctx.fill();
+  }
 
   const SHOWCASE = [
-    {
-      name: "ChatGPT",
-      caption: "Ask a question, switch tabs — know the instant the answer's ready, without checking back.",
-      stages: [
-        { label: "Thinking...", hold: 1800, renderer: spinner(BRAND_GREEN_CHATGPT) },
-        { label: "Answer ready", hold: 1400, renderer: iconBadge(BRAND_GREEN_CHATGPT, "✓") },
-      ],
-    },
-    {
-      name: "Claude",
-      caption: "Extended thinking and tool use can run for a while — the tab could carry that status instead of the chat window.",
-      stages: [
-        { label: "Thinking...", hold: 1600, renderer: spinner(BRAND_CLAY_CLAUDE) },
-        { label: "Using tools...", hold: 1600, renderer: spinner(BRAND_CLAY_CLAUDE) },
-        { label: "Ready", hold: 1400, renderer: iconBadge(BRAND_CLAY_CLAUDE, "✓") },
-      ],
-    },
-    {
-      name: "YouTube",
-      caption: "\"Processing HD versions\" can run for minutes — creators tab away and forget to check back.",
-      stages: [
-        { label: "Uploading...", hold: 1600, renderer: spinner(BRAND_RED_YOUTUBE) },
-        { label: "Processing...", hold: 1600, renderer: spinner(BRAND_RED_YOUTUBE) },
-        { label: "Ready to watch", hold: 1400, renderer: iconBadge(BRAND_RED_YOUTUBE, "▶") },
-      ],
-    },
-    {
-      name: "GitHub",
-      caption: "CI runs and PR checks are pure watch-and-wait — the outcome matters more than anything else on the page.",
-      stages: [
-        { label: "Running checks...", hold: 1800, renderer: spinner(BRAND_INK_GITHUB) },
-        { label: "Checks passed", hold: 1400, renderer: iconBadge(SUCCESS_GREEN, "✓") },
-      ],
-    },
-    {
-      name: "Vercel",
-      caption: "A build+deploy takes 30s–3min — and the audience watching is developers, who'd get this instantly.",
-      stages: [
-        { label: "Building...", hold: 1800, renderer: spinner(BRAND_INK_VERCEL) },
-        { label: "Deployed", hold: 1400, renderer: iconBadge(SUCCESS_GREEN, "✓") },
-      ],
-    },
-    {
-      name: "Figma",
-      caption: "Exporting a large board takes real time — the on-canvas \"Saving...\" indicator disappears the moment you tab away.",
-      stages: [
-        { label: "Rendering export...", hold: 1800, renderer: spinner(BRAND_PURPLE_FIGMA) },
-        { label: "Export ready", hold: 1400, renderer: iconBadge(BRAND_PURPLE_FIGMA, "✓") },
-      ],
-    },
-    {
-      name: "Canva",
-      caption: "Video and print exports commonly run past a minute — people switch to email or social while \"Preparing your download\" runs.",
-      stages: [
-        { label: "Preparing...", hold: 1800, renderer: spinner(BRAND_PURPLE_CANVA) },
-        { label: "Download ready", hold: 1400, renderer: iconBadge(BRAND_PURPLE_CANVA, "✓") },
-      ],
-    },
-    {
-      name: "Notion",
-      caption: "Notion AI drafts take several seconds to a minute — right now there's no way to know it's done without looking back.",
-      stages: [
-        { label: "Generating...", hold: 1800, renderer: spinner(BRAND_INK_NOTION) },
-        { label: "Draft ready", hold: 1400, renderer: iconBadge(BRAND_INK_NOTION, "✓") },
-      ],
-    },
-    {
-      name: "Dropbox",
-      caption: "The canonical case: a large upload or sync running in a tab nobody's watching anymore.",
-      stages: [
-        { label: "Syncing...", hold: 1800, renderer: spinner(BRAND_BLUE_DROPBOX) },
-        { label: "Synced", hold: 1400, renderer: iconBadge(BRAND_BLUE_DROPBOX, "✓") },
-      ],
-    },
-    {
-      name: "Zoom",
-      caption: "\"Your recording is processing\" can run 10–30+ minutes — hosts forget the tab entirely.",
-      stages: [
-        { label: "Processing recording...", hold: 2000, renderer: spinner(BRAND_BLUE_ZOOM) },
-        { label: "Ready to share", hold: 1400, renderer: iconBadge(BRAND_BLUE_ZOOM, "✓") },
-      ],
-    },
+    { name: "BMW", caption: "The badge stays perfectly still while a wheel of spokes rotates behind it.", renderer: renderBMW },
+    { name: "“KFC”", caption: "Two drumsticks swing toward the center and meet, on a loop.", renderer: renderChickenLegs },
+    { name: "McDonald's", caption: "A burger that gets visibly spicier — color and flame flecks ramp with a heat cycle.", renderer: renderSpicyBurger },
+    { name: "Spotify", caption: "A 3-bar equalizer bouncing independently — the “currently playing” visual language.", renderer: renderSpotify },
+    { name: "YouTube", caption: "Cycles from video → a brief “AD” interstitial → back, plus an independent “+1” subscriber pulse.", renderer: renderYouTube },
+    { name: "Rolex", caption: "An actual analog clock reading your system's real time — hour, minute, and second hands are live.", renderer: renderRolex },
   ];
 
-  function buildShowcaseCard(company) {
+  function buildShowcaseCard(item) {
     const card = document.createElement("div");
     card.className = "showcase-card";
     card.innerHTML = `
-      <div class="showcase-tab">
-        <canvas width="32" height="32"></canvas>
-        <span class="showcase-tab-label">${company.name}</span>
-      </div>
-      <h3>${company.name}</h3>
-      <p class="showcase-caption">${company.caption}</p>
-      <span class="showcase-stage"></span>
+      <canvas class="showcase-canvas" width="96" height="96"></canvas>
+      <h3>${item.name}</h3>
+      <p class="showcase-caption">${item.caption}</p>
     `;
     const canvas = card.querySelector("canvas");
-    const stageLabel = card.querySelector(".showcase-stage");
-    driveShowcaseCard(canvas, stageLabel, company.stages);
+    driveShowcaseCard(canvas, item.renderer);
     return card;
   }
 
-  function driveShowcaseCard(canvas, stageLabel, stages) {
+  function driveShowcaseCard(canvas, renderer) {
     const ctx = canvas.getContext("2d");
     const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const start = performance.now();
 
     if (reduceMotion) {
       // Respect it here too, same as the library itself does for the real
-      // favicon — show the resolved (final) stage as a single static frame.
-      const last = stages[stages.length - 1];
-      ctx.clearRect(0, 0, 32, 32);
-      last.renderer({ ctx, size: 32, t: 1 });
-      stageLabel.textContent = last.label;
+      // favicon — show a single static frame instead of animating forever.
+      ctx.clearRect(0, 0, 96, 96);
+      renderer({ ctx, size: 96, t: 1 });
       return;
     }
 
-    let stageIndex = 0;
-    let stageStartMs = performance.now();
-    stageLabel.textContent = stages[0].label;
-
-    function frame(now) {
-      const stage = stages[stageIndex];
-      const elapsedMs = now - stageStartMs;
-      ctx.clearRect(0, 0, 32, 32);
-      stage.renderer({ ctx, size: 32, t: elapsedMs / 1000 });
-
-      if (elapsedMs >= stage.hold) {
-        stageIndex = (stageIndex + 1) % stages.length;
-        stageStartMs = now;
-        stageLabel.textContent = stages[stageIndex].label;
-      }
+    (function frame() {
+      const t = (performance.now() - start) / 1000;
+      ctx.clearRect(0, 0, 96, 96);
+      renderer({ ctx, size: 96, t });
       requestAnimationFrame(frame);
-    }
-    requestAnimationFrame(frame);
+    })();
   }
 
   const showcaseGrid = document.getElementById("showcase-grid");
-  for (const company of SHOWCASE) {
-    showcaseGrid.appendChild(buildShowcaseCard(company));
+  for (const item of SHOWCASE) {
+    showcaseGrid.appendChild(buildShowcaseCard(item));
   }
 
   // ---- Copy install command ----
