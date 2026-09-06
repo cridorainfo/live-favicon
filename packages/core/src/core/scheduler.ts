@@ -15,6 +15,17 @@ export type TickFn = (elapsedMs: number) => void;
 const FOREGROUND_FRAME_MS = 1000 / 12; // ~12fps
 const BACKGROUND_INTERVAL_MS = 1000;
 
+/**
+ * rAF's own timestamp isn't guaranteed to be >= a performance.now() taken
+ * moments before scheduling it (it can register as marginally earlier due
+ * to how frame timing is captured), so a naive `now - startTime` can go
+ * slightly negative. Presets shouldn't have to individually defend against
+ * that — clamp once, here, at the source.
+ */
+export function elapsedSince(startTime: number, now: number = performance.now()): number {
+  return Math.max(0, now - startTime);
+}
+
 export class Scheduler {
   private readonly tick: TickFn;
   private rafId: number | null = null;
@@ -68,9 +79,9 @@ export class Scheduler {
 
   private runLoop(): void {
     if (typeof document !== "undefined" && document.hidden) {
-      this.tick(performance.now() - this.startTime);
+      this.tick(elapsedSince(this.startTime));
       this.intervalId = setInterval(() => {
-        this.tick(performance.now() - this.startTime);
+        this.tick(elapsedSince(this.startTime));
       }, BACKGROUND_INTERVAL_MS);
       return;
     }
@@ -78,7 +89,7 @@ export class Scheduler {
     const frame = (now: number) => {
       if (now - this.lastFrameTime >= FOREGROUND_FRAME_MS) {
         this.lastFrameTime = now;
-        this.tick(now - this.startTime);
+        this.tick(elapsedSince(this.startTime, now));
       }
       this.rafId = requestAnimationFrame(frame);
     };

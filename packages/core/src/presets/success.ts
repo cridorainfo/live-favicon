@@ -7,7 +7,12 @@ export const renderSuccess: PresetRenderer = ({ ctx, size, t }) => {
   const cx = size / 2;
   const cy = size / 2;
   const radius = size * 0.42;
-  const pop = Math.min(1, t / POP_DURATION);
+  // Clamp to [0, 1]: t can arrive slightly negative from rAF timestamp
+  // jitter (the frame timestamp isn't always >= a performance.now() taken
+  // just before scheduling it), and an unclamped negative pop here would
+  // make `eased` negative, which makes `radius * eased` a negative radius —
+  // an invalid argument to ctx.arc() that throws IndexSizeError.
+  const pop = Math.max(0, Math.min(1, t / POP_DURATION));
   const eased = 1 - Math.pow(1 - pop, 3);
 
   ctx.fillStyle = "#22C55E";

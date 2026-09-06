@@ -7,7 +7,9 @@ export const renderError: PresetRenderer = ({ ctx, size, t }) => {
   const cx = size / 2;
   const cy = size / 2;
   const radius = size * 0.42;
-  const pop = Math.min(1, t / POP_DURATION);
+  // See the matching comment in success.ts: clamp to [0, 1] so rAF
+  // timestamp jitter can never produce a negative radius here.
+  const pop = Math.max(0, Math.min(1, t / POP_DURATION));
   const eased = 1 - Math.pow(1 - pop, 3);
 
   ctx.fillStyle = "#EF4444";

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { Scheduler } from "../src/core/scheduler";
+import { Scheduler, elapsedSince } from "../src/core/scheduler";
 
 function setHidden(hidden: boolean) {
   Object.defineProperty(document, "hidden", { value: hidden, configurable: true });
@@ -76,5 +76,24 @@ describe("Scheduler", () => {
     scheduler.stop();
     // Starting twice must not double the tick rate.
     expect(tick.mock.calls.length).toBeLessThan(10);
+  });
+});
+
+// Regression: rAF's own frame timestamp isn't guaranteed to be >= a
+// performance.now() taken just before scheduling it. Presets that derive an
+// animation phase from elapsed time (success/error's pop-in, notably) can't
+// safely assume t >= 0 unless the scheduler guarantees it here.
+describe("elapsedSince", () => {
+  it("returns the normal positive difference when now is after startTime", () => {
+    expect(elapsedSince(1000, 1250)).toBe(250);
+  });
+
+  it("clamps to 0 instead of going negative when now is before startTime", () => {
+    expect(elapsedSince(1000, 998)).toBe(0);
+    expect(elapsedSince(1000, 999.999)).toBe(0);
+  });
+
+  it("returns exactly 0 at startTime", () => {
+    expect(elapsedSince(1000, 1000)).toBe(0);
   });
 });
