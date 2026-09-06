@@ -3,13 +3,13 @@
 ## Install
 
 ```bash
-npm install live-favicon
+npm install @live-favicon/core
 ```
 
 Using React? Also install the hooks package:
 
 ```bash
-npm install live-favicon @live-favicon/react
+npm install @live-favicon/core @live-favicon/react
 ```
 
 No build step? Use the standalone script — see [Vanilla / no-build usage](#vanilla--no-build-usage) below.
@@ -17,7 +17,7 @@ No build step? Use the standalone script — see [Vanilla / no-build usage](#van
 ## Your first status
 
 ```js
-import favicon from "live-favicon";
+import favicon from "@live-favicon/core";
 
 favicon.thinking();
 ```
@@ -92,7 +92,7 @@ favicon.title(`(${unreadCount}) Inbox`); // most browsers show this in the tab
 ## Vanilla / no-build usage
 
 ```html
-<script src="https://unpkg.com/live-favicon"></script>
+<script src="https://unpkg.com/@live-favicon/core"></script>
 <script>
   const favicon = LiveFavicon.default;
   favicon.thinking();
@@ -105,7 +105,7 @@ exercising every method.
 ## React
 
 ```bash
-npm install live-favicon @live-favicon/react
+npm install @live-favicon/core @live-favicon/react
 ```
 
 ```tsx

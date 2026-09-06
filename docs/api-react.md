@@ -1,7 +1,7 @@
 # React API reference (`@live-favicon/react`)
 
 ```bash
-npm install live-favicon @live-favicon/react
+npm install @live-favicon/core @live-favicon/react
 ```
 
 ```tsx

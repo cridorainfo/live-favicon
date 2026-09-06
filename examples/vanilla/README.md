@@ -18,7 +18,7 @@ some browsers restrict favicon data URLs on the file protocol).
 In your own project, skip the local build and use the CDN build instead:
 
 ```html
-<script src="https://unpkg.com/live-favicon"></script>
+<script src="https://unpkg.com/@live-favicon/core"></script>
 <script>
   const favicon = LiveFavicon.default;
   favicon.thinking();

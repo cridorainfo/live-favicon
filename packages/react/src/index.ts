@@ -1,5 +1,5 @@
-export { default as favicon, FAVICON_SIZE } from "live-favicon";
-export type { FaviconState, TaskOptions } from "live-favicon";
+export { default as favicon, FAVICON_SIZE } from "@live-favicon/core";
+export type { FaviconState, TaskOptions } from "@live-favicon/core";
 
 export { useFaviconState } from "./useFaviconState";
 export type { UseFaviconStateOptions } from "./useFaviconState";

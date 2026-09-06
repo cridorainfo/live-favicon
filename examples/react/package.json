@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "live-favicon": "^0.1.0",
+    "@live-favicon/core": "^0.1.0",
     "@live-favicon/react": "^0.1.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"

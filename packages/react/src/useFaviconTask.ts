@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type DependencyList } from "react";
-import favicon from "live-favicon";
-import type { TaskOptions } from "live-favicon";
+import favicon from "@live-favicon/core";
+import type { TaskOptions } from "@live-favicon/core";
 
 export type UseFaviconTaskStatus = "idle" | "pending" | "success" | "error";
 

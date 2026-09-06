@@ -319,7 +319,7 @@
           <a class="btn" href="https://github.com/cridorainfo/live-favicon" target="_blank" rel="noopener">★ Star on GitHub</a>
         </div>
         <div class="install-line">
-          <span class="mono">npm install live-favicon</span>
+          <span class="mono">npm install @live-favicon/core</span>
           <button id="copy-install" type="button" aria-label="Copy install command">Copy</button>
         </div>
       </div>
@@ -422,7 +422,7 @@
       <p class="eyebrow">The API</p>
       <h2>One line to start. One to wrap a promise.</h2>
       <div class="install-grid">
-        <div class="code-block"><pre><code><span class="kw">import</span> favicon <span class="kw">from</span> <span class="str">"live-favicon"</span>;
+        <div class="code-block"><pre><code><span class="kw">import</span> favicon <span class="kw">from</span> <span class="str">"@live-favicon/core"</span>;
 
 favicon.<span class="fn">thinking</span>();
 <span class="kw">await</span> generateAI();
@@ -447,7 +447,7 @@ favicon.<span class="fn">success</span>();</code></pre></div>
       <div class="install-grid">
         <div class="card">
           <h3>Vanilla / no build step</h3>
-          <div class="code-block" style="margin-top:12px;"><pre><code>&lt;script src="https://unpkg.com/live-favicon"&gt;&lt;/script&gt;
+          <div class="code-block" style="margin-top:12px;"><pre><code>&lt;script src="https://unpkg.com/@live-favicon/core"&gt;&lt;/script&gt;
 &lt;script&gt;
   <span class="kw">const</span> favicon = LiveFavicon.default;
   favicon.<span class="fn">thinking</span>();
@@ -511,7 +511,7 @@ useFaviconState(status === <span class="str">"done"</span> ? <span class="str">"
     <p>MIT License &middot; © 2026 live-favicon contributors</p>
     <div class="foot-links">
       <a href="https://github.com/cridorainfo/live-favicon" target="_blank" rel="noopener">GitHub</a>
-      <a href="https://www.npmjs.com/package/live-favicon" target="_blank" rel="noopener">npm</a>
+      <a href="https://www.npmjs.com/package/@live-favicon/core" target="_blank" rel="noopener">npm</a>
       <a href="https://github.com/cridorainfo/live-favicon/tree/main/docs" target="_blank" rel="noopener">Docs</a>
       <a href="#contact">Contact</a>
     </div>
@@ -526,11 +526,11 @@ useFaviconState(status === <span class="str">"done"</span> ? <span class="str">"
   const copyBtn = document.getElementById("copy-install");
   copyBtn.addEventListener("click", async () => {
     try {
-      await navigator.clipboard.writeText("npm install live-favicon");
+      await navigator.clipboard.writeText("npm install @live-favicon/core");
       copyBtn.textContent = "Copied!";
       setTimeout(() => (copyBtn.textContent = "Copy"), 1500);
     } catch {
-      copyBtn.textContent = "npm install live-favicon";
+      copyBtn.textContent = "npm install @live-favicon/core";
     }
   });
 

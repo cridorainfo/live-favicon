@@ -2,12 +2,14 @@
 
 **Turn your browser tab into a live status indicator.**
 
+> Published on npm as [`@live-favicon/core`](https://www.npmjs.com/package/@live-favicon/core) — the plain `live-favicon` name was already taken by an unrelated package.
+
 A tiny, dependency-free library that turns the favicon and tab title into a
 real-time status channel — so users don't have to keep checking back on a tab
 to see if a task finished.
 
 ```js
-import favicon from "live-favicon";
+import favicon from "@live-favicon/core";
 
 favicon.thinking();
 await generateAI();
@@ -31,13 +33,13 @@ as a lightweight status display.
 ## Install
 
 ```bash
-npm install live-favicon
+npm install @live-favicon/core
 ```
 
 Or drop in the standalone build:
 
 ```html
-<script src="https://unpkg.com/live-favicon"></script>
+<script src="https://unpkg.com/@live-favicon/core"></script>
 <script>
   const favicon = LiveFavicon.default;
   favicon.thinking();
@@ -47,7 +49,7 @@ Or drop in the standalone build:
 ## Quick start
 
 ```js
-import favicon from "live-favicon";
+import favicon from "@live-favicon/core";
 
 favicon.thinking();     // start a state
 favicon.progress(42);   // show a progress ring (0-100)

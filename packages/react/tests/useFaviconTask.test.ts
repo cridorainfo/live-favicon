@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
-import favicon from "live-favicon";
+import favicon from "@live-favicon/core";
 import { useFaviconTask } from "../src/useFaviconTask";
 
 describe("useFaviconTask", () => {

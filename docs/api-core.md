@@ -1,7 +1,7 @@
 # Core API reference (`live-favicon`)
 
 ```js
-import favicon, { FAVICON_SIZE } from "live-favicon";
+import favicon, { FAVICON_SIZE } from "@live-favicon/core";
 ```
 
 `favicon` is a singleton — there's one browser tab, so there's one instance.

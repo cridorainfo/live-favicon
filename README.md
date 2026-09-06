@@ -3,7 +3,7 @@
 **Turn your browser tab into a live status indicator.**
 
 ```js
-import favicon from "live-favicon";
+import favicon from "@live-favicon/core";
 
 favicon.thinking();
 await generateAI();
@@ -17,7 +17,7 @@ instructions and full API docs.
 
 | Package                                          | Description                                  |
 | ------------------------------------------------- | --------------------------------------------- |
-| [`live-favicon`](./packages/core)                  | Core library — zero dependencies, ~3KB gzipped |
+| [`@live-favicon/core`](./packages/core)            | Core library — zero dependencies, ~3KB gzipped |
 | [`@live-favicon/react`](./packages/react)          | React hooks (`useFaviconState`, `useFaviconTask`) |
 
 ## Docs

@@ -8,5 +8,5 @@ export default defineConfig({
   clean: true,
   minify: true,
   target: "es2020",
-  external: ["react", "react-dom", "live-favicon"],
+  external: ["react", "react-dom", "@live-favicon/core"],
 });

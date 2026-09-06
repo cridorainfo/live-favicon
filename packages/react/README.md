@@ -1,11 +1,11 @@
 # @live-favicon/react
 
-React hooks for [live-favicon](https://www.npmjs.com/package/live-favicon) — turn the browser tab into a live status indicator.
+React hooks for [live-favicon](https://www.npmjs.com/package/@live-favicon/core) — turn the browser tab into a live status indicator.
 
 ## Install
 
 ```bash
-npm install live-favicon @live-favicon/react
+npm install @live-favicon/core @live-favicon/react
 ```
 
 ## `useFaviconState`

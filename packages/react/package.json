@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "React hooks for live-favicon.",
   "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -41,7 +44,7 @@
     "react": ">=17"
   },
   "dependencies": {
-    "live-favicon": "^0.1.0"
+    "@live-favicon/core": "^0.1.0"
   },
   "devDependencies": {
     "@testing-library/react": "^16.0.1",

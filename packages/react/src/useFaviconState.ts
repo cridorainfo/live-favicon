@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
-import favicon from "live-favicon";
-import type { FaviconState } from "live-favicon";
+import favicon from "@live-favicon/core";
+import type { FaviconState } from "@live-favicon/core";
 
 export interface UseFaviconStateOptions {
   /**
