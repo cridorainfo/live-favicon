@@ -1,6 +1,6 @@
 {
   "name": "@live-favicon/core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Turn your browser tab into a live status indicator.",
   "type": "module",
   "publishConfig": {
@@ -36,6 +36,7 @@
     "notification",
     "progress",
     "canvas",
+    "sound",
     "ui"
   ],
   "license": "MIT",

@@ -1,6 +1,6 @@
 {
   "name": "@live-favicon/react",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "React hooks for live-favicon.",
   "type": "module",
   "publishConfig": {
@@ -44,7 +44,7 @@
     "react": ">=17"
   },
   "dependencies": {
-    "@live-favicon/core": "^0.1.0"
+    "@live-favicon/core": "^0.2.0"
   },
   "devDependencies": {
     "@testing-library/react": "^16.0.1",
