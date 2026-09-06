@@ -1,0 +1,649 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>live-favicon — Turn your browser tab into a live status indicator</title>
+<meta name="description" content="A tiny, dependency-free JavaScript library that turns the browser favicon and tab title into a real-time status channel. Free, open source, MIT licensed." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2242%22 fill=%22%236366F1%22/></svg>" id="site-favicon" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  /*
+    Theme: warm, playful, "sticker" look modeled on buymeacoffee.com —
+    cream background, bold black outlines, hard offset shadows (no blur),
+    chunky pill buttons, rounded friendly type instead of a dark SaaS panel.
+  */
+  :root {
+    color-scheme: light;
+    --bg: #fff9f0;
+    --bg-alt: #fff1da;
+    --card: #ffffff;
+    --ink: #14110f;
+    --muted: #6b6259;
+    --border: #14110f;
+    --yellow: #ffdd00;
+    --yellow-soft: #fff3b0;
+    --coral: #ff6b57;
+    --pink: #ff8fc7;
+    --green: #1db954;
+    --red: #ef4444;
+    --amber: #f59e0b;
+    --blue: #3b82f6;
+    --purple: #8b5cf6;
+    --teal: #14b8a6;
+    --orange: #f97316;
+    --shadow: 4px 4px 0 var(--ink);
+    --shadow-sm: 3px 3px 0 var(--ink);
+    --shadow-lg: 6px 6px 0 var(--ink);
+    --max: 1080px;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  code, pre, .mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--yellow); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+  a:hover { color: var(--coral); }
+  img { max-width: 100%; display: block; }
+
+  .wrap { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
+  section { padding: 84px 0; }
+  section.alt { background: var(--bg-alt); }
+  section.tight { padding: 56px 0; }
+  h1, h2, h3 { line-height: 1.12; margin: 0; font-weight: 800; letter-spacing: -0.02em; }
+  h2 { font-size: 2rem; }
+  .eyebrow {
+    display: inline-block;
+    background: var(--yellow);
+    border: 2px solid var(--border);
+    border-radius: 999px;
+    color: var(--ink);
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 5px 14px;
+    margin: 0 0 14px;
+  }
+  .section-sub { color: var(--muted); max-width: 640px; margin: 16px 0 0; font-size: 1.05rem; font-weight: 500; }
+
+  /* ---------- Header ---------- */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--bg);
+    border-bottom: 3px solid var(--border);
+  }
+  header .wrap { display: flex; align-items: center; justify-content: space-between; height: 68px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.1rem; color: var(--ink); text-decoration: none; }
+  .brand-dot {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--yellow);
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+  }
+  nav { display: flex; align-items: center; gap: 26px; }
+  nav a { color: var(--ink); font-size: 0.92rem; font-weight: 600; text-decoration: none; }
+  nav a:hover { color: var(--coral); }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 20px;
+    border-radius: 999px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    border: 2px solid var(--border);
+    background: var(--card);
+    color: var(--ink);
+    cursor: pointer;
+    white-space: nowrap;
+    text-decoration: none;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  .btn:hover { text-decoration: none; color: var(--ink); transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--ink); }
+  .btn:active { transform: translate(1px, 1px); box-shadow: 2px 2px 0 var(--ink); }
+  .btn-primary { background: var(--yellow); }
+
+  /* ---------- Hero ---------- */
+  .hero { padding: 64px 0 88px; }
+  .hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 56px; align-items: center; }
+  @media (max-width: 860px) { .hero-grid { grid-template-columns: 1fr; } }
+  h1 { font-size: clamp(2.1rem, 4vw, 3.2rem); }
+  .hero-sub { color: var(--muted); font-size: 1.15rem; font-weight: 500; margin: 22px 0 30px; max-width: 520px; }
+  .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 26px; }
+  .install-line {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 10px 10px 16px;
+    font-size: 0.9rem;
+    color: var(--ink);
+    box-shadow: var(--shadow-sm);
+  }
+  .install-line button {
+    background: var(--yellow-soft); border: 2px solid var(--border); color: var(--ink); cursor: pointer;
+    padding: 6px 10px; border-radius: 6px; font-size: 0.78rem; font-weight: 700;
+  }
+  .install-line button:hover { background: var(--yellow); }
+
+  /* Fake browser mockup */
+  .mockup {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+  }
+  .mockup-bar { display: flex; align-items: center; gap: 8px; padding: 12px 14px; background: var(--bg-alt); border-bottom: 2px solid var(--border); }
+  .mockup-dot { width: 11px; height: 11px; border-radius: 50%; background: var(--card); border: 2px solid var(--border); }
+  .mockup-tab {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--card);
+    border-radius: 8px 8px 0 0;
+    padding: 8px 14px;
+    margin-left: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--ink);
+    border: 2px solid var(--border);
+    border-bottom: none;
+  }
+  .mockup-tab img { width: 16px; height: 16px; image-rendering: pixelated; }
+  .mockup-body { padding: 44px 28px; text-align: center; }
+  .mockup-body img {
+    width: 88px; height: 88px; margin: 0 auto 18px; image-rendering: pixelated;
+    background:
+      linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee),
+      linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee);
+    background-size: 14px 14px;
+    background-position: 0 0, 7px 7px;
+    border-radius: 12px;
+  }
+  .mockup-body p { color: var(--muted); font-size: 0.85rem; font-weight: 500; margin: 0; }
+
+  /* ---------- Code blocks ---------- */
+  .code-block {
+    background: #1a1a1a;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.88rem;
+    box-shadow: var(--shadow-sm);
+    color: #e7e9ee;
+  }
+  .code-block .c1 { color: #8b93a3; }
+  .code-block .kw { color: #c4b5fd; }
+  .code-block .fn { color: #93c5fd; }
+  .code-block .str { color: #86efac; }
+
+  /* ---------- Problem cards ---------- */
+  .cards-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 40px; }
+  @media (max-width: 780px) { .cards-3 { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 26px;
+    box-shadow: var(--shadow);
+  }
+  .card .icon {
+    font-size: 1.5rem; margin-bottom: 14px;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--yellow-soft); border: 2px solid var(--border);
+  }
+  .card h3 { font-size: 1.05rem; margin-bottom: 8px; }
+  .card p { color: var(--muted); font-size: 0.92rem; font-weight: 500; margin: 0; }
+
+  /* ---------- Presets gallery ---------- */
+  .preset-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 16px;
+    margin-top: 40px;
+  }
+  .preset-item {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 8px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  .preset-item:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--ink); }
+  .preset-item img {
+    width: 40px; height: 40px; margin: 0 auto 10px;
+    background:
+      linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee),
+      linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee);
+    background-size: 10px 10px;
+    background-position: 0 0, 5px 5px;
+    border-radius: 8px;
+  }
+  .preset-item span { font-size: 0.78rem; color: var(--muted); font-weight: 600; font-family: ui-monospace, monospace; }
+
+  /* ---------- Demo section ---------- */
+  .demo-panel {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 18px;
+    padding: 44px;
+    text-align: center;
+    margin-top: 36px;
+    box-shadow: var(--shadow-lg);
+  }
+  .demo-steps { color: var(--muted); font-weight: 500; font-size: 0.95rem; margin: 0 auto 24px; max-width: 460px; text-align: left; }
+  .demo-steps li { margin-bottom: 6px; }
+  .demo-steps strong { color: var(--ink); }
+  #demo-status {
+    margin-top: 20px;
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 0.9rem;
+    min-height: 1.3em;
+  }
+  #demo-status.done { color: var(--green); }
+
+  /* ---------- Install / get started ---------- */
+  .install-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 36px; }
+  @media (max-width: 780px) { .install-grid { grid-template-columns: 1fr; } }
+
+  /* ---------- Support ---------- */
+  .support-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 30px; }
+  .btn-coffee { background: var(--yellow); }
+  .btn-sponsor { background: var(--pink); }
+
+  /* ---------- Footer ---------- */
+  footer { border-top: 3px solid var(--border); padding: 40px 0; background: var(--bg-alt); }
+  footer .wrap { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+  footer .foot-links { display: flex; gap: 20px; flex-wrap: wrap; }
+  footer .foot-links a { font-weight: 600; text-decoration: none; }
+  footer .foot-links a:hover { color: var(--coral); }
+  footer p { color: var(--muted); font-size: 0.85rem; font-weight: 500; margin: 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="brand" href="#top">
+      <span class="brand-dot"></span>
+      live-favicon
+    </a>
+    <nav>
+      <a href="#presets">Presets</a>
+      <a href="#demo">Demo</a>
+      <a href="#get-started">Get started</a>
+      <a href="https://github.com/cridorainfo/live-favicon/tree/main/docs" target="_blank" rel="noopener">Docs</a>
+      <a href="https://github.com/cridorainfo/live-favicon" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">Free &middot; Open Source &middot; MIT</p>
+        <h1>Turn your browser tab into a live status indicator.</h1>
+        <p class="hero-sub">
+          A tiny, dependency-free library that turns the favicon and tab
+          title into a real-time status channel — so users don't have to
+          keep checking back on a tab to see if a task finished.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#demo">Watch it work</a>
+          <a class="btn" href="https://github.com/cridorainfo/live-favicon" target="_blank" rel="noopener">★ Star on GitHub</a>
+        </div>
+        <div class="install-line">
+          <span class="mono">npm install live-favicon</span>
+          <button id="copy-install" type="button" aria-label="Copy install command">Copy</button>
+        </div>
+      </div>
+
+      <div class="mockup">
+        <div class="mockup-bar">
+          <span class="mockup-dot"></span><span class="mockup-dot"></span><span class="mockup-dot"></span>
+        </div>
+        <div style="padding: 0 14px;">
+          <div class="mockup-tab">
+            <img id="hero-tab-icon" alt="" />
+            <span id="hero-tab-title">Your App</span>
+          </div>
+        </div>
+        <div class="mockup-body">
+          <img id="hero-preview" alt="live favicon preview" />
+          <p id="hero-caption">This is your actual browser favicon, live.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PROBLEM ============ -->
+  <section class="tight alt">
+    <div class="wrap">
+      <p class="eyebrow">The problem</p>
+      <h2>Your users shouldn't have to keep checking.</h2>
+      <p class="section-sub">
+        Modern apps do a lot of work that doesn't finish instantly. Once
+        someone switches tabs, all of that becomes invisible until they come
+        back to check — a small but constant tax on attention.
+      </p>
+      <div class="cards-3">
+        <div class="card">
+          <span class="icon">🤖</span>
+          <h3>AI generation</h3>
+          <p>Thinking, streaming, done — let the tab carry the status while the chat window is out of view.</p>
+        </div>
+        <div class="card">
+          <span class="icon">📤</span>
+          <h3>Uploads &amp; exports</h3>
+          <p>Show real progress on the tab itself, so switching away doesn't mean losing track of where it's at.</p>
+        </div>
+        <div class="card">
+          <span class="icon">💬</span>
+          <h3>Notifications</h3>
+          <p>A new message or mention updates the tab immediately — no polling, no missed pings.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LIVE DEMO ============ -->
+  <section id="demo">
+    <div class="wrap">
+      <p class="eyebrow">See it for real</p>
+      <h2>Start the task. Leave the tab.</h2>
+      <p class="section-sub">This isn't a video — it drives the real favicon of the tab you're on right now.</p>
+
+      <div class="demo-panel">
+        <ol class="demo-steps">
+          <li>1. Click <strong>Start task</strong> below.</li>
+          <li>2. Switch to another tab or window right away.</li>
+          <li>3. Watch <strong>this tab's favicon</strong>, not this page.</li>
+        </ol>
+        <button class="btn btn-primary" id="start-demo-task">Start task</button>
+        <div id="demo-status">Idle.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PRESETS ============ -->
+  <section id="presets" class="tight alt">
+    <div class="wrap">
+      <p class="eyebrow">14 built-in states</p>
+      <h2>Beautiful by default.</h2>
+      <p class="section-sub">Every icon below is a real render straight from the library — 64×64, drawn on canvas, zero images shipped.</p>
+      <div class="preset-grid">
+        <div class="preset-item"><img src="assets/presets/thinking.png" alt="thinking"><span>thinking</span></div>
+        <div class="preset-item"><img src="assets/presets/loading.png" alt="loading"><span>loading</span></div>
+        <div class="preset-item"><img src="assets/presets/processing.png" alt="processing"><span>processing</span></div>
+        <div class="preset-item"><img src="assets/presets/syncing.png" alt="syncing"><span>syncing</span></div>
+        <div class="preset-item"><img src="assets/presets/reconnecting.png" alt="reconnecting"><span>reconnecting</span></div>
+        <div class="preset-item"><img src="assets/presets/uploading.png" alt="uploading"><span>uploading</span></div>
+        <div class="preset-item"><img src="assets/presets/downloading.png" alt="downloading"><span>downloading</span></div>
+        <div class="preset-item"><img src="assets/presets/notification.png" alt="notification"><span>notification</span></div>
+        <div class="preset-item"><img src="assets/presets/mention.png" alt="mention"><span>mention</span></div>
+        <div class="preset-item"><img src="assets/presets/message.png" alt="message"><span>message</span></div>
+        <div class="preset-item"><img src="assets/presets/success.png" alt="success"><span>success</span></div>
+        <div class="preset-item"><img src="assets/presets/error.png" alt="error"><span>error</span></div>
+        <div class="preset-item"><img src="assets/presets/warning.png" alt="warning"><span>warning</span></div>
+        <div class="preset-item"><img src="assets/presets/offline.png" alt="offline"><span>offline</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CODE ============ -->
+  <section class="tight">
+    <div class="wrap">
+      <p class="eyebrow">The API</p>
+      <h2>One line to start. One to wrap a promise.</h2>
+      <div class="install-grid">
+        <div class="code-block"><pre><code><span class="kw">import</span> favicon <span class="kw">from</span> <span class="str">"live-favicon"</span>;
+
+favicon.<span class="fn">thinking</span>();
+<span class="kw">await</span> generateAI();
+favicon.<span class="fn">success</span>();</code></pre></div>
+        <div class="code-block"><pre><code><span class="c1">// the flagship API — handles the</span>
+<span class="c1">// whole lifecycle automatically</span>
+<span class="kw">await</span> favicon.<span class="fn">task</span>(generateAI(), {
+  start: <span class="str">"thinking"</span>,
+  success: <span class="str">"success"</span>,
+  error: <span class="str">"error"</span>,
+});</code></pre></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ GET STARTED ============ -->
+  <section id="get-started" class="alt">
+    <div class="wrap">
+      <p class="eyebrow">Get started</p>
+      <h2>Works everywhere JavaScript does.</h2>
+      <p class="section-sub">Zero runtime dependencies, ~3KB gzipped. Plain JS, React, or anywhere the DOM exists.</p>
+      <div class="install-grid">
+        <div class="card">
+          <h3>Vanilla / no build step</h3>
+          <div class="code-block" style="margin-top:12px;"><pre><code>&lt;script src="https://unpkg.com/live-favicon"&gt;&lt;/script&gt;
+&lt;script&gt;
+  <span class="kw">const</span> favicon = LiveFavicon.default;
+  favicon.<span class="fn">thinking</span>();
+&lt;/script&gt;</code></pre></div>
+        </div>
+        <div class="card">
+          <h3>React</h3>
+          <div class="code-block" style="margin-top:12px;"><pre><code><span class="kw">import</span> { useFaviconState } <span class="kw">from</span> <span class="str">"@live-favicon/react"</span>;
+
+useFaviconState(status === <span class="str">"done"</span> ? <span class="str">"success"</span> : <span class="str">"thinking"</span>);</code></pre></div>
+        </div>
+      </div>
+      <p class="section-sub" style="margin-top:28px;">
+        Full guides:
+        <a href="https://github.com/cridorainfo/live-favicon/blob/main/docs/getting-started.md" target="_blank" rel="noopener">Getting started</a> ·
+        <a href="https://github.com/cridorainfo/live-favicon/blob/main/docs/api-core.md" target="_blank" rel="noopener">Core API</a> ·
+        <a href="https://github.com/cridorainfo/live-favicon/blob/main/docs/api-react.md" target="_blank" rel="noopener">React API</a> ·
+        <a href="https://github.com/cridorainfo/live-favicon" target="_blank" rel="noopener">Source on GitHub</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ SUPPORT ============ -->
+  <section class="tight">
+    <div class="wrap">
+      <p class="eyebrow">Support the project</p>
+      <h2>Free, and staying that way.</h2>
+      <p class="section-sub">
+        The core library is 100% free and MIT licensed — use it commercially,
+        modify it, fork it. If it saves you time, consider supporting
+        development.
+      </p>
+      <div class="support-actions">
+        <a class="btn btn-coffee" href="https://buymeacoffee.com/cridorainfo" target="_blank" rel="noopener">☕ Buy me a coffee</a>
+        <a class="btn btn-sponsor" href="https://github.com/sponsors/cridorainfo" target="_blank" rel="noopener">♥ GitHub Sponsors</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CONTACT ============ -->
+  <section class="tight alt" id="contact">
+    <div class="wrap">
+      <p class="eyebrow">Contact</p>
+      <h2>Questions, bugs, or ideas?</h2>
+      <p class="section-sub">
+        For bugs and feature requests, a
+        <a href="https://github.com/cridorainfo/live-favicon/issues" target="_blank" rel="noopener">GitHub issue</a>
+        gets the fastest response and helps other users searching for the
+        same thing. For anything else:
+      </p>
+      <p style="margin-top:18px;">
+        <a class="btn" href="mailto:lagariasalam@gmail.com?subject=live-favicon">✉ Email lagariasalam@gmail.com</a>
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>MIT License &middot; © 2026 live-favicon contributors</p>
+    <div class="foot-links">
+      <a href="https://github.com/cridorainfo/live-favicon" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.npmjs.com/package/live-favicon" target="_blank" rel="noopener">npm</a>
+      <a href="https://github.com/cridorainfo/live-favicon/tree/main/docs" target="_blank" rel="noopener">Docs</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/live-favicon.global.js"></script>
+<script>
+  const favicon = LiveFavicon.default;
+
+  // ---- Copy install command ----
+  const copyBtn = document.getElementById("copy-install");
+  copyBtn.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText("npm install live-favicon");
+      copyBtn.textContent = "Copied!";
+      setTimeout(() => (copyBtn.textContent = "Copy"), 1500);
+    } catch {
+      copyBtn.textContent = "npm install live-favicon";
+    }
+  });
+
+  // ---- This site's own tab favicon IS the demo. ----
+  // favicon.state(...) always drives the real, single <link rel="icon">
+  // on this page — there's no sandboxed "just the mockup" mode, because
+  // that's the whole point: dogfood the product on the page selling it.
+  // The mockup graphic below just mirrors that same real frame so it's
+  // legible at a glance without squinting at the actual tiny tab icon.
+  const heroPreview = document.getElementById("hero-preview");
+  const heroTabIcon = document.getElementById("hero-tab-icon");
+  const heroTabTitle = document.getElementById("hero-tab-title");
+  const heroCaption = document.getElementById("hero-caption");
+
+  // A tour through (almost) every preset, so just leaving this tab open
+  // demonstrates the whole catalog without anyone touching a button.
+  const heroSequence = [
+    ["thinking", "Thinking...", 1300],
+    ["uploading", "Uploading...", 1300],
+    ["downloading", "Downloading...", 1300],
+    ["syncing", "Syncing...", 1300],
+    ["reconnecting", "Reconnecting...", 1300],
+    ["notification", "New notification", 1300],
+    ["mention", "You were mentioned", 1300],
+    ["message", "New message", 1300],
+    ["processing", "Processing...", 1300],
+    ["loading", "Loading...", 1300],
+    ["success", "✓ Complete", 1900],
+    ["warning", "Needs attention", 1500],
+    ["offline", "Offline", 1300],
+    ["error", "Something went wrong", 1900],
+  ];
+  let heroIndex = 0;
+  let heroTimer = null;
+  let heroPaused = false;
+
+  function mirrorCurrentFrame(title) {
+    const link = document.querySelector('link[data-live-favicon="true"]');
+    if (link) {
+      heroPreview.src = link.href;
+      heroTabIcon.src = link.href;
+    }
+    heroTabTitle.textContent = title;
+    heroCaption.textContent = "This is your actual browser tab favicon, live.";
+  }
+
+  function runHeroStep() {
+    if (heroPaused) return;
+    const [state, title, hold] = heroSequence[heroIndex];
+    favicon.state(state);
+    setTimeout(() => mirrorCurrentFrame(title), 60);
+    heroIndex = (heroIndex + 1) % heroSequence.length;
+    heroTimer = setTimeout(runHeroStep, hold);
+  }
+
+  function pauseHeroLoop() {
+    heroPaused = true;
+    if (heroTimer) clearTimeout(heroTimer);
+  }
+
+  function resumeHeroLoop() {
+    heroPaused = false;
+    runHeroStep();
+  }
+
+  runHeroStep();
+
+  // ---- "Start the task. Leave the tab." interactive demo ----
+  const demoStatus = document.getElementById("demo-status");
+  const demoBtn = document.getElementById("start-demo-task");
+
+  function fakeTask() {
+    return new Promise((resolve) => {
+      favicon.state("thinking");
+      favicon.title("Thinking...");
+      demoStatus.textContent = "Thinking...";
+
+      setTimeout(() => {
+        favicon.state("processing");
+        favicon.title("Processing...");
+        demoStatus.textContent = "Processing...";
+
+        let pct = 0;
+        const tick = setInterval(() => {
+          pct += 12 + Math.random() * 10;
+          if (pct >= 100) {
+            pct = 100;
+            clearInterval(tick);
+            favicon.title("✓ Complete");
+            resolve();
+            return;
+          }
+          favicon.progress(pct);
+          favicon.title(`${Math.round(pct)}% — Processing...`);
+          demoStatus.textContent = `${Math.round(pct)}% complete...`;
+        }, 260);
+      }, 700);
+    });
+  }
+
+  demoBtn.addEventListener("click", async () => {
+    pauseHeroLoop(); // don't fight the auto-playing tour while this runs
+    demoBtn.disabled = true;
+    demoStatus.classList.remove("done");
+    await favicon.task(fakeTask(), { start: "thinking", success: "success" });
+    demoStatus.textContent = "✓ Task complete. You didn't need to check the page.";
+    demoStatus.classList.add("done");
+    demoBtn.disabled = false;
+    setTimeout(() => {
+      favicon.reset();
+      resumeHeroLoop();
+    }, 4000);
+  });
+</script>
+</body>
+</html>
