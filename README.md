@@ -27,12 +27,14 @@ instructions and full API docs.
 - [React API reference](./docs/api-react.md)
 - [Presets](./docs/presets.md) — every built-in state, with a real render of each
 - [Custom images](./docs/custom-images.md) — bring your own PNG or SVG instead of (or alongside) the built-in shapes
+- [Sound](./docs/sound.md) — play a chime or your own audio when a state activates, plus the global mute switch
 - [Background tabs](./docs/background-tabs.md) — how the scheduler behaves when the tab isn't visible
 - [Accessibility](./docs/accessibility.md)
 
 ## Examples
 
 - [`examples/vanilla`](./examples/vanilla) — zero-build, plain `<script>` tag usage; a reference page exercising every method
+- [`examples/vanilla/gmail-inbox.html`](./examples/vanilla/gmail-inbox.html) — icon, tab title text, and sound as independent per-event, developer-controlled knobs
 - [`examples/react`](./examples/react) — Vite + React + TypeScript, using `@live-favicon/react`
 
 ## Demo

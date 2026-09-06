@@ -2,6 +2,7 @@ import { Scheduler } from "./core/scheduler";
 import { renderFrame, FAVICON_SIZE } from "./renderer/canvas";
 import { setFaviconDataUrl, resetFavicon } from "./renderer/favicon-link";
 import { setTitle, resetTitle } from "./renderer/title";
+import { ensureAudioUnlock, playSound, setSoundEnabled } from "./renderer/sound";
 import { presets, makeProgress, spinner, pulse, iconBadge, type Preset } from "./presets";
 import type { FaviconState, PresetRenderer, TaskOptions } from "./types";
 
@@ -13,6 +14,17 @@ export interface DefineOptions {
   animated?: boolean;
   /** For a pop-in/settle style animation: stop the scheduler and force a settled frame this long after activation. */
   settleAfterMs?: number;
+  /**
+   * Play a sound every time this state activates: `true` for the built-in
+   * synthesized chime, or a URL string to play your own audio file instead.
+   * Silenced globally by `favicon.sound(false)`. Browsers require a prior
+   * user gesture on the page before audio can play — the first `sound`-
+   * carrying `define()` call arms a one-time listener that unlocks audio on
+   * the page's next click/keypress/tap, and a sound requested before that
+   * happens is replayed once the gesture lands, rather than lost — see
+   * docs/sound.md.
+   */
+  sound?: boolean | string;
 }
 
 function prefersReducedMotion(): boolean {
@@ -51,10 +63,12 @@ class LiveFavicon {
     if (name === "idle" || presets[name as keyof typeof presets]) {
       throw new Error(`live-favicon: "${name}" is a built-in state and can't be redefined via define().`);
     }
+    if (options.sound) ensureAudioUnlock();
     this.customPresets.set(name, {
       render: renderer,
       animated: options.animated ?? true,
       settleAfterMs: options.settleAfterMs,
+      sound: options.sound,
     });
     return this;
   }
@@ -78,6 +92,8 @@ class LiveFavicon {
       }
       return this;
     }
+
+    if (preset.sound) playSound(preset.sound);
 
     if (!preset.animated || prefersReducedMotion()) {
       this.scheduler.stop();
@@ -176,6 +192,19 @@ class LiveFavicon {
   /** Set the browser tab title. The original title is restored by reset(). */
   title(text: string): this {
     setTitle(text);
+    return this;
+  }
+
+  /**
+   * Global on/off switch for every state's `sound` (see `define()`).
+   * Defaults to enabled. This is a mute switch, not a per-call option —
+   * it doesn't affect which icon or title a state shows, only whether its
+   * declared sound is allowed to play. Unlike `reset()`, this setting is
+   * not cleared by `reset()` — it's a standing preference, the same way a
+   * `define()`'d state survives `reset()`.
+   */
+  sound(enabled: boolean = true): this {
+    setSoundEnabled(enabled);
     return this;
   }
 
