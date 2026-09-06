@@ -26,6 +26,7 @@ instructions and full API docs.
 - [Core API reference](./docs/api-core.md)
 - [React API reference](./docs/api-react.md)
 - [Presets](./docs/presets.md) — every built-in state, with a real render of each
+- [Custom images](./docs/custom-images.md) — bring your own PNG or SVG instead of (or alongside) the built-in shapes
 - [Background tabs](./docs/background-tabs.md) — how the scheduler behaves when the tab isn't visible
 - [Accessibility](./docs/accessibility.md)
 

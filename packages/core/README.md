@@ -181,6 +181,7 @@ to another tab and watch this one instead.
 - [Getting started](../../docs/getting-started.md)
 - [Core API reference](../../docs/api-core.md)
 - [Presets](../../docs/presets.md) — a real render of every state
+- [Custom images](../../docs/custom-images.md) — bring your own PNG or SVG
 - [Background tabs](../../docs/background-tabs.md)
 - [Accessibility](../../docs/accessibility.md)
 - [`examples/vanilla`](../../examples/vanilla) — a reference page exercising every method

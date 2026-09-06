@@ -153,6 +153,11 @@ favicon.define("custom", ({ ctx, size, t }) => {
 });
 ```
 
+`ctx` isn't limited to procedural shapes — `ctx.drawImage()` works too, so a
+renderer can animate your own PNG or SVG artwork instead. See
+[custom-images.md](./custom-images.md) for preloading, sprite sheets,
+cross-fades, and other patterns.
+
 `settleAfterMs` is for a pop-in-then-hold animation like `success`/`error`:
 when set, the scheduler force-paints a frame at `t = 1` (past any reasonable
 pop-in duration) and stops, exactly `settleAfterMs` after activation — see
