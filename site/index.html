@@ -327,6 +327,7 @@
       <a href="#showcase">Showcase</a>
       <a href="#presets">Presets</a>
       <a href="#demo">Demo</a>
+      <a href="#sound">Sound</a>
       <a href="#get-started">Get started</a>
       <a href="https://github.com/cridorainfo/live-favicon/tree/main/docs" target="_blank" rel="noopener">Docs</a>
       <a href="https://github.com/cridorainfo/live-favicon" target="_blank" rel="noopener">GitHub</a>
@@ -442,6 +443,34 @@
         </ol>
         <button class="btn btn-primary" id="start-demo-task">Start task</button>
         <div id="demo-status">Idle.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SOUND ============ -->
+  <section id="sound" class="tight alt">
+    <div class="wrap">
+      <p class="eyebrow">Full control, per state</p>
+      <h2>Icon, tab title, and sound — you decide all three.</h2>
+      <p class="section-sub">
+        <code>favicon.define(name, renderer, &#123; sound &#125;)</code> attaches a
+        chime (built-in, or your own audio file) to a custom icon, and
+        <code>favicon.title()</code> puts whatever text you want in the tab —
+        a chat message, an order update, a one-time code. Two different
+        events below, each with its own icon, sound, and title text.
+      </p>
+
+      <div class="demo-panel">
+        <ol class="demo-steps">
+          <li>1. Click either button — this is your real tab, sound included.</li>
+          <li>2. Watch <strong>this tab's title and favicon</strong> change to that event's actual content.</li>
+          <li>3. Unmute if your browser tab is muted, to hear the chime.</li>
+        </ol>
+        <div class="row" style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+          <button class="btn btn-primary" id="sound-demo-message">Simulate a new message</button>
+          <button class="btn" id="sound-demo-otp">Simulate a verification code</button>
+        </div>
+        <div id="sound-demo-status">Idle.</div>
       </div>
     </div>
   </section>
@@ -987,6 +1016,41 @@ useFaviconState(status === <span class="str">"done"</span> ? <span class="str">"
       favicon.reset();
       resumeHeroLoop();
     }, 4000);
+  });
+
+  // ---- "Icon, tab title, and sound" interactive demo ----
+  // Two custom states, each with its own icon *and* sound — favicon.title()
+  // then carries that specific event's own content, not a generic label.
+  const { iconBadge } = LiveFavicon;
+  favicon.define("site-new-message", iconBadge("#4285F4", "✉"), { sound: true });
+  favicon.define("site-new-otp", iconBadge("#EA4335", "🔑"), {
+    sound:
+      "data:audio/wav;base64,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",
+  });
+
+  const soundMessageBtn = document.getElementById("sound-demo-message");
+  const soundOtpBtn = document.getElementById("sound-demo-otp");
+  const soundStatus = document.getElementById("sound-demo-status");
+
+  function fireSoundDemo(state, title, label) {
+    pauseHeroLoop();
+    favicon.state(state);
+    favicon.badge(1);
+    favicon.title(title);
+    soundStatus.textContent = `favicon.state("${state}"); favicon.title(${JSON.stringify(title)}) — ${label}`;
+    setTimeout(() => {
+      favicon.reset();
+      resumeHeroLoop();
+    }, 5000);
+  }
+
+  soundMessageBtn.addEventListener("click", () => {
+    fireSoundDemo("site-new-message", "Priya: Re: Thursday's sync — moved to 3pm", "watch this tab's title");
+  });
+
+  soundOtpBtn.addEventListener("click", () => {
+    const code = String(Math.floor(100000 + Math.random() * 900000));
+    fireSoundDemo("site-new-otp", `Your code: ${code}`, "a different icon + sound");
   });
 </script>
 </body>

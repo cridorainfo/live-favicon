@@ -10,6 +10,11 @@ await generateAI();
 favicon.success();
 ```
 
+**[Live showcase →](https://cridorainfo.github.io/live-favicon/)** — every
+built-in state animated, a real task-driven demo, and an interactive
+icon + tab title + sound section, all running live in your own browser tab,
+no install required.
+
 This is the monorepo for `live-favicon`. See the packages below for install
 instructions and full API docs.
 
