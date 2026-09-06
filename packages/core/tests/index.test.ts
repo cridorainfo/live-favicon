@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import favicon from "../src/index";
+import { presets } from "../src/presets";
 
 function getLink() {
   return document.querySelector<HTMLLinkElement>('link[data-live-favicon="true"]');
@@ -71,6 +72,14 @@ describe("favicon controller", () => {
   it("task() respects custom state overrides", async () => {
     await favicon.task(Promise.resolve("ok"), { start: "loading", success: "notification" });
     expect(getLink()).not.toBeNull();
+  });
+
+  it("renders a favicon for every registered preset without throwing", () => {
+    for (const name of Object.keys(presets) as Array<keyof typeof presets>) {
+      favicon.state(name);
+      expect(getLink(), `state "${name}" should render a favicon`).not.toBeNull();
+      favicon.reset();
+    }
   });
 
   it("supports chaining", () => {

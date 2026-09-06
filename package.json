@@ -1,49 +1,14 @@
 {
-  "name": "live-favicon",
-  "version": "0.1.0",
-  "description": "Turn your browser tab into a live status indicator.",
-  "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "unpkg": "./dist/index.global.js",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    }
-  },
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE"
+  "name": "live-favicon-monorepo",
+  "private": true,
+  "version": "0.0.0",
+  "workspaces": [
+    "packages/*"
   ],
-  "sideEffects": false,
   "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch",
-    "test": "vitest run",
-    "typecheck": "tsc --noEmit"
-  },
-  "keywords": [
-    "favicon",
-    "browser-tab",
-    "status",
-    "notification",
-    "progress",
-    "canvas",
-    "ui"
-  ],
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/YOUR_USERNAME/live-favicon.git"
-  },
-  "devDependencies": {
-    "jsdom": "^25.0.1",
-    "tsup": "^8.3.5",
-    "typescript": "^5.7.2",
-    "vitest": "^2.1.8"
+    "build": "npm run build --workspaces --if-present",
+    "dev": "npm run dev --workspace=live-favicon",
+    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
   }
 }

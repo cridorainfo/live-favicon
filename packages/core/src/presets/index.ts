@@ -1,11 +1,16 @@
 import type { FaviconState, PresetRenderer } from "../types";
 import { renderThinking } from "./thinking";
 import { renderLoading, renderProcessing, renderSyncing } from "./spinner";
+import { renderReconnecting } from "./reconnecting";
+import { renderUploading } from "./upload";
+import { renderDownloading } from "./download";
 import { renderSuccess } from "./success";
 import { renderError } from "./error";
 import { renderWarning } from "./warning";
 import { renderOffline } from "./offline";
 import { renderNotification } from "./notification";
+import { renderMention } from "./mention";
+import { renderMessage } from "./message";
 
 export type AnimatedState = Exclude<FaviconState, "idle">;
 
@@ -22,7 +27,12 @@ export const presets: Record<AnimatedState, Preset> = {
   loading: { render: renderLoading, animated: true },
   processing: { render: renderProcessing, animated: true },
   syncing: { render: renderSyncing, animated: true },
+  reconnecting: { render: renderReconnecting, animated: true },
+  uploading: { render: renderUploading, animated: true },
+  downloading: { render: renderDownloading, animated: true },
   notification: { render: renderNotification, animated: true },
+  mention: { render: renderMention, animated: true },
+  message: { render: renderMessage, animated: true },
   success: { render: renderSuccess, animated: true, settleAfterMs: 500 },
   error: { render: renderError, animated: true, settleAfterMs: 450 },
   warning: { render: renderWarning, animated: false },

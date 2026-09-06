@@ -13,11 +13,16 @@ export type FaviconState =
   | "loading"
   | "processing"
   | "syncing"
+  | "reconnecting"
+  | "uploading"
+  | "downloading"
   | "success"
   | "error"
   | "warning"
   | "offline"
-  | "notification";
+  | "notification"
+  | "mention"
+  | "message";
 
 export interface TaskOptions {
   /** state to show while the task is in flight. Default: "thinking" */

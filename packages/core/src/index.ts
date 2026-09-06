@@ -63,6 +63,21 @@ class LiveFavicon {
   syncing(): this {
     return this.state("syncing");
   }
+  reconnecting(): this {
+    return this.state("reconnecting");
+  }
+  uploading(): this {
+    return this.state("uploading");
+  }
+  downloading(): this {
+    return this.state("downloading");
+  }
+  mention(): this {
+    return this.state("mention");
+  }
+  message(): this {
+    return this.state("message");
+  }
   success(): this {
     return this.state("success");
   }
