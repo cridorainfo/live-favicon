@@ -99,6 +99,10 @@ error handling still runs.
 | `error`        | red circle → X                       |
 | `warning`      | amber circle with `!` (static)       |
 | `offline`      | gray ring with a slash (static)      |
+| `alarm`        | ticking clock face, urgent            |
+| `celebration`  | multi-color confetti burst            |
+| `payment`      | spinner (gold) — money in flight     |
+| `queue`        | three dots pulsing in sequence        |
 
 Call any of them directly (`favicon.success()`) or via `favicon.state("success")`.
 
@@ -124,7 +128,8 @@ See [docs/api-core.md](../../docs/api-core.md#favicondefinename-renderer-options
 favicon.state(name: FaviconState): this
 favicon.thinking() / .loading() / .processing() / .syncing() / .reconnecting() /
   .uploading() / .downloading() / .success() / .error() / .warning() /
-  .offline() / .notification() / .mention() / .message(): this
+  .offline() / .notification() / .mention() / .message() /
+  .alarm() / .celebration() / .payment() / .queue(): this
 
 favicon.define(name: string, renderer: PresetRenderer, options?: DefineOptions): this  // register a custom state
 

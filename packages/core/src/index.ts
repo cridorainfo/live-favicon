@@ -144,6 +144,18 @@ class LiveFavicon {
   notification(): this {
     return this.state("notification");
   }
+  alarm(): this {
+    return this.state("alarm");
+  }
+  celebration(): this {
+    return this.state("celebration");
+  }
+  payment(): this {
+    return this.state("payment");
+  }
+  queue(): this {
+    return this.state("queue");
+  }
 
   /** Render a 0-100 progress ring. Stops any running state animation. */
   progress(percent: number): this {

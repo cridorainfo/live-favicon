@@ -26,3 +26,4 @@ export function makeSpinner(color: string): PresetRenderer {
 export const renderLoading = makeSpinner("#3B82F6");
 export const renderProcessing = makeSpinner("#8B5CF6");
 export const renderSyncing = makeSpinner("#14B8A6");
+export const renderPayment = makeSpinner("#EAB308");

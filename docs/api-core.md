@@ -35,6 +35,10 @@ favicon.success()
 favicon.error()
 favicon.warning()
 favicon.offline()
+favicon.alarm()
+favicon.celebration()
+favicon.payment()
+favicon.queue()
 ```
 
 `favicon.thinking()` is exactly `favicon.state("thinking")`.
@@ -180,7 +184,8 @@ type BuiltInFaviconState =
   | "thinking" | "loading" | "processing" | "syncing" | "reconnecting"
   | "uploading" | "downloading"
   | "notification" | "mention" | "message"
-  | "success" | "error" | "warning" | "offline";
+  | "success" | "error" | "warning" | "offline"
+  | "alarm" | "celebration" | "payment" | "queue";
 
 // FaviconState accepts any BuiltInFaviconState, or any string — so a name
 // registered with define() type-checks too, while the built-ins still show

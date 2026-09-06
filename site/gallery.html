@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>live-favicon — Creative Gallery</title>
+<meta name="description" content="Seven playful, fan-made examples of what a favicon.define() can draw — an analog watch reading real time, a flag that flutters, and more." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2242%22 fill=%22%236366F1%22/></svg>" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #fff9f0; --bg-alt: #fff1da; --card: #ffffff;
+    --ink: #14110f; --muted: #6b6259; --border: #14110f;
+    --yellow: #ffdd00; --yellow-soft: #fff3b0; --coral: #ff6b57;
+    --shadow: 4px 4px 0 var(--ink); --shadow-sm: 3px 3px 0 var(--ink); --shadow-lg: 6px 6px 0 var(--ink);
+    --max: 1080px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    line-height: 1.55; -webkit-font-smoothing: antialiased;
+  }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background: #1c2029; color: #e7e9ee; padding: 2px 6px; border-radius: 4px; }
+  a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--yellow); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+  a:hover { color: var(--coral); }
+
+  .wrap { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
+  header { position: sticky; top: 0; z-index: 20; background: var(--bg); border-bottom: 3px solid var(--border); }
+  header .wrap { display: flex; align-items: center; justify-content: space-between; height: 68px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.1rem; color: var(--ink); text-decoration: none; }
+  .brand-dot { width: 26px; height: 26px; border-radius: 50%; background: var(--yellow); border: 2px solid var(--border); flex-shrink: 0; }
+  nav a { color: var(--ink); font-size: 0.92rem; font-weight: 600; text-decoration: none; margin-left: 24px; }
+  nav a:hover { color: var(--coral); }
+
+  main { padding: 48px 0 88px; }
+  h1 { font-size: clamp(1.8rem, 3.5vw, 2.4rem); font-weight: 800; letter-spacing: -0.02em; margin: 0 0 14px; }
+  .sub { color: var(--muted); font-size: 1.05rem; font-weight: 500; max-width: 640px; margin: 0 0 28px; }
+
+  .disclaimer {
+    background: var(--card); border: 2px solid var(--border); border-radius: 14px;
+    box-shadow: var(--shadow); padding: 20px 24px; margin-bottom: 36px; font-size: 0.9rem; line-height: 1.6;
+  }
+  .disclaimer strong { color: var(--coral); }
+
+  .tab-note { text-align: center; color: var(--muted); font-weight: 500; font-size: 0.9rem; margin-bottom: 32px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+  .card { background: var(--card); border: 2px solid var(--border); border-radius: 14px; padding: 22px; text-align: center; box-shadow: var(--shadow-sm); }
+  .card canvas {
+    width: 96px; height: 96px; margin: 0 auto 16px; border-radius: 18px; border: 2px solid var(--border);
+    background:
+      linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee),
+      linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee);
+    background-size: 14px 14px; background-position: 0 0, 7px 7px;
+  }
+  .card h3 { margin: 0 0 6px; font-size: 1.05rem; }
+  .card p { margin: 0; color: var(--muted); font-size: 0.85rem; line-height: 1.5; font-weight: 500; }
+
+  footer { border-top: 3px solid var(--border); padding: 32px 0; background: var(--bg-alt); text-align: center; }
+  footer p { color: var(--muted); font-size: 0.85rem; margin: 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="brand" href="./"><span class="brand-dot"></span>live-favicon</a>
+    <nav>
+      <a href="./#showcase">Showcase</a>
+      <a href="./#get-started">Get started</a>
+      <a href="https://github.com/cridorainfo/live-favicon" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <h1>Creative gallery</h1>
+    <p class="sub">
+      Seven examples that push <code>favicon.define()</code> past status
+      indicators — proof the same tiny canvas that shows "thinking..." can
+      draw pretty much anything you're willing to code.
+    </p>
+
+    <div class="disclaimer">
+      <strong>Not affiliated with, endorsed by, or sponsored by any brand
+      shown below.</strong> These are unofficial, fan-made visual homages —
+      brand-evocative colors and shapes, not traced logos or official
+      assets — built purely to demonstrate what a custom
+      <code>favicon.define()</code> renderer can draw.
+    </div>
+
+    <p class="tab-note">This tab's own favicon is cycling through all seven right now — check the tab strip.</p>
+
+    <div class="grid" id="grid"></div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap"><p>MIT License &middot; © 2026 live-favicon contributors &middot; <a href="./">Back to live-favicon</a></p></div>
+</footer>
+
+<script src="assets/js/live-favicon.global.js"></script>
+<script>
+const favicon = LiveFavicon.default;
+
+// ---------------------------------------------------------------
+// Each renderer is a plain PresetRenderer: ({ ctx, size, t }) => {}
+// — the exact same signature favicon.define() expects. Nothing here
+// is special-cased; these are just seven examples of how far it stretches.
+// ---------------------------------------------------------------
+
+function renderBMW({ ctx, size, t }) {
+  const cx = size / 2, cy = size / 2;
+  const outerR = size * 0.46;
+
+  ctx.strokeStyle = "#94A3B8";
+  ctx.lineWidth = size * 0.03;
+  const spokes = 5;
+  for (let i = 0; i < spokes; i++) {
+    const angle = t * 2.2 + (i / spokes) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(angle) * outerR, cy + Math.sin(angle) * outerR);
+    ctx.stroke();
+  }
+  ctx.strokeStyle = "#1E293B";
+  ctx.lineWidth = size * 0.07;
+  ctx.beginPath();
+  ctx.arc(cx, cy, outerR, 0, Math.PI * 2);
+  ctx.stroke();
+
+  const badgeR = size * 0.27;
+  ctx.fillStyle = "#ffffff";
+  ctx.beginPath();
+  ctx.arc(cx, cy, badgeR, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#0066B1";
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.arc(cx, cy, badgeR, -Math.PI / 2, 0);
+  ctx.closePath();
+  ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.arc(cx, cy, badgeR, Math.PI / 2, Math.PI);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle = "#0f172a";
+  ctx.lineWidth = size * 0.015;
+  ctx.beginPath();
+  ctx.arc(cx, cy, badgeR, 0, Math.PI * 2);
+  ctx.stroke();
+}
+
+function drawDrumstick(ctx, x, y, angle, flip, size) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(angle);
+  if (flip) ctx.scale(-1, 1);
+  ctx.fillStyle = "#C1440E";
+  ctx.beginPath();
+  ctx.ellipse(0, 0, size * 0.16, size * 0.1, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#F5E9DA";
+  ctx.fillRect(size * 0.1, -size * 0.025, size * 0.12, size * 0.05);
+  ctx.restore();
+}
+
+function renderChickenLegs({ ctx, size, t }) {
+  const cx = size / 2, cy = size / 2;
+  const cycle = 1.4;
+  const phase = (t % cycle) / cycle;
+  const swing = Math.sin(phase * Math.PI);
+  const gap = (1 - swing) * size * 0.2 + size * 0.05;
+  drawDrumstick(ctx, cx - gap, cy, -0.3, false, size);
+  drawDrumstick(ctx, cx + gap, cy, Math.PI + 0.3, true, size);
+}
+
+function lerp(a, b, f) { return a + (b - a) * f; }
+function lerpColor(hexA, hexB, f) {
+  const a = [1, 3, 5].map((i) => parseInt(hexA.slice(i, i + 2), 16));
+  const b = [1, 3, 5].map((i) => parseInt(hexB.slice(i, i + 2), 16));
+  const c = a.map((v, i) => Math.round(lerp(v, b[i], f)));
+  return `rgb(${c[0]},${c[1]},${c[2]})`;
+}
+
+function renderSpicyBurger({ ctx, size, t }) {
+  const cx = size / 2, cy = size / 2;
+  const heat = (Math.sin(t * 1.4) + 1) / 2;
+
+  ctx.fillStyle = "#E8A33D";
+  ctx.beginPath();
+  ctx.ellipse(cx, cy + size * 0.16, size * 0.26, size * 0.09, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = lerpColor("#7B3F00", "#B91C1C", heat);
+  ctx.beginPath();
+  ctx.ellipse(cx, cy + size * 0.04, size * 0.24, size * 0.07, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "#22C55E";
+  ctx.fillRect(cx - size * 0.22, cy - size * 0.02, size * 0.44, size * 0.03);
+
+  ctx.fillStyle = "#F0B94F";
+  ctx.beginPath();
+  ctx.ellipse(cx, cy - size * 0.08, size * 0.25, size * 0.14, 0, Math.PI, Math.PI * 2);
+  ctx.fill();
+
+  if (heat > 0.55) {
+    const flicker = (heat - 0.55) / 0.45;
+    ctx.fillStyle = `rgba(249, 115, 22, ${flicker})`;
+    for (const dx of [-0.14, 0, 0.14]) {
+      ctx.beginPath();
+      ctx.moveTo(cx + size * dx, cy - size * 0.22);
+      ctx.lineTo(cx + size * (dx - 0.03), cy - size * 0.32);
+      ctx.lineTo(cx + size * (dx + 0.03), cy - size * 0.32);
+      ctx.closePath();
+      ctx.fill();
+    }
+  }
+}
+
+function renderUSAFlag({ ctx, size, t }) {
+  // Pinned at the pole (left edge), flutters more freely toward the fly
+  // end (right edge) — amplitude grows left-to-right. Two layered sine
+  // terms at different frequencies/speeds break the motion into something
+  // closer to an irregular flutter than a smooth flowing ripple.
+  const stripeH = size / 13;
+  for (let col = 0; col < size; col += 2) {
+    const reach = col / size;
+    const amplitude = size * (0.006 + reach * 0.055);
+    const flutter =
+      Math.sin(col * 0.5 + t * 5.2) * 0.65 +
+      Math.sin(col * 1.15 - t * 8.4) * 0.35;
+    const waveY = amplitude * flutter;
+    for (let s = 0; s < 13; s++) {
+      ctx.fillStyle = s % 2 === 0 ? "#B22234" : "#FFFFFF";
+      ctx.fillRect(col, s * stripeH + waveY, 2.2, stripeH + 1);
+    }
+  }
+  const cantonW = size * 0.42, cantonH = stripeH * 7;
+  const cantonWave = Math.sin(t * 5.2) * size * 0.006;
+  ctx.fillStyle = "#3C3B6E";
+  ctx.fillRect(0, cantonWave, cantonW, cantonH);
+  ctx.fillStyle = "#ffffff";
+  for (let r = 0; r < 3; r++) {
+    for (let c = 0; c < 4; c++) {
+      const x = (c + 0.5) * (cantonW / 4);
+      const y = cantonWave + (r + 0.5) * (cantonH / 3);
+      ctx.beginPath();
+      ctx.arc(x, y, size * 0.015, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+}
+
+function renderSpotify({ ctx, size, t }) {
+  const cx = size / 2, cy = size / 2;
+  ctx.fillStyle = "#1DB954";
+  ctx.beginPath();
+  ctx.arc(cx, cy, size * 0.46, 0, Math.PI * 2);
+  ctx.fill();
+
+  const bars = 3;
+  const barW = size * 0.09;
+  const gap = size * 0.05;
+  const baseX = cx - ((bars - 1) * (barW + gap)) / 2;
+  for (let i = 0; i < bars; i++) {
+    const h = (0.25 + 0.55 * Math.abs(Math.sin(t * 6 + i * 1.3))) * size * 0.4;
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(baseX + i * (barW + gap), cy + size * 0.2 - h, barW, h);
+  }
+}
+
+function roundRectPath(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+function renderYouTube({ ctx, size, t }) {
+  const cycle = 3.2;
+  const phase = (t % cycle) / cycle;
+  const showingAd = phase > 0.6 && phase < 0.85;
+  const cx = size / 2, cy = size / 2;
+
+  roundRectPath(ctx, cx - size * 0.42, cy - size * 0.3, size * 0.84, size * 0.6, size * 0.12);
+  ctx.fillStyle = showingAd ? "#EAB308" : "#FF0000";
+  ctx.fill();
+
+  if (showingAd) {
+    ctx.fillStyle = "#111827";
+    ctx.font = `bold ${size * 0.24}px system-ui, sans-serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("AD", cx, cy);
+  } else {
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.moveTo(cx - size * 0.1, cy - size * 0.16);
+    ctx.lineTo(cx - size * 0.1, cy + size * 0.16);
+    ctx.lineTo(cx + size * 0.18, cy);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  const subPhase = (t % 1.6) / 1.6;
+  if (subPhase < 0.4) {
+    const a = 1 - subPhase / 0.4;
+    ctx.fillStyle = `rgba(255,255,255,${a})`;
+    ctx.font = `bold ${size * 0.16}px system-ui, sans-serif`;
+    ctx.textAlign = "center";
+    ctx.fillText("+1", cx + size * 0.32, cy - size * 0.28 - subPhase * size * 0.15);
+  }
+}
+
+function renderRolex({ ctx, size }) {
+  const cx = size / 2, cy = size / 2;
+  const r = size * 0.44;
+
+  ctx.fillStyle = "#046A38";
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = "#D4AF37";
+  ctx.lineWidth = size * 0.06;
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.stroke();
+
+  ctx.strokeStyle = "#D4AF37";
+  ctx.lineWidth = size * 0.018;
+  for (let i = 0; i < 12; i++) {
+    const a = (i / 12) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.moveTo(cx + Math.cos(a) * r * 0.76, cy + Math.sin(a) * r * 0.76);
+    ctx.lineTo(cx + Math.cos(a) * r * 0.62, cy + Math.sin(a) * r * 0.62);
+    ctx.stroke();
+  }
+
+  const now = new Date();
+  const hours = now.getHours() % 12;
+  const minutes = now.getMinutes();
+  const seconds = now.getSeconds();
+  const ms = now.getMilliseconds();
+
+  const secAngle = ((seconds + ms / 1000) / 60) * Math.PI * 2 - Math.PI / 2;
+  const minAngle = ((minutes + seconds / 60) / 60) * Math.PI * 2 - Math.PI / 2;
+  const hourAngle = ((hours + minutes / 60) / 12) * Math.PI * 2 - Math.PI / 2;
+
+  ctx.lineCap = "round";
+  ctx.strokeStyle = "#ffffff";
+  ctx.lineWidth = size * 0.035;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(cx + Math.cos(hourAngle) * r * 0.45, cy + Math.sin(hourAngle) * r * 0.45);
+  ctx.stroke();
+
+  ctx.lineWidth = size * 0.03;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(cx + Math.cos(minAngle) * r * 0.62, cy + Math.sin(minAngle) * r * 0.62);
+  ctx.stroke();
+
+  ctx.strokeStyle = "#D4AF37";
+  ctx.lineWidth = size * 0.015;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(cx + Math.cos(secAngle) * r * 0.68, cy + Math.sin(secAngle) * r * 0.68);
+  ctx.stroke();
+
+  ctx.fillStyle = "#D4AF37";
+  ctx.beginPath();
+  ctx.arc(cx, cy, size * 0.04, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+const GALLERY = [
+  { name: "BMW", desc: "The badge stays perfectly still while a wheel of spokes rotates behind it.", renderer: renderBMW },
+  { name: "“KFC”", desc: "Two drumsticks swing toward the center and meet, on a loop.", renderer: renderChickenLegs },
+  { name: "McDonald's", desc: "A burger that gets visibly spicier — color and flame flecks ramp with a heat cycle.", renderer: renderSpicyBurger },
+  { name: "USA flag", desc: "Pinned at the pole, fluttering more freely toward the fly end — two layered sine terms, not one smooth wave.", renderer: renderUSAFlag },
+  { name: "Spotify", desc: "A 3-bar equalizer bouncing independently — the “currently playing” visual language.", renderer: renderSpotify },
+  { name: "YouTube", desc: "Cycles from video → a brief “AD” interstitial → back, plus an independent “+1” subscriber pulse.", renderer: renderYouTube },
+  { name: "Rolex", desc: "An actual analog clock reading your system's real time — hour, minute, and second hands are live.", renderer: renderRolex },
+];
+
+const grid = document.getElementById("grid");
+for (const item of GALLERY) {
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = `<canvas width="96" height="96"></canvas><h3>${item.name}</h3><p>${item.desc}</p>`;
+  grid.appendChild(card);
+
+  const ctx = card.querySelector("canvas").getContext("2d");
+  const start = performance.now();
+  (function loop() {
+    const t = (performance.now() - start) / 1000;
+    ctx.clearRect(0, 0, 96, 96);
+    item.renderer({ ctx, size: 96, t });
+    requestAnimationFrame(loop);
+  })();
+}
+
+// The real page favicon cycles through all seven too, via favicon.define() —
+// proof these are genuine PresetRenderers, not gallery-only tricks.
+GALLERY.forEach((item, i) => favicon.define(`gallery-${i}`, item.renderer));
+let idx = 0;
+function cycleRealFavicon() {
+  favicon.state(`gallery-${idx}`);
+  idx = (idx + 1) % GALLERY.length;
+  setTimeout(cycleRealFavicon, 2200);
+}
+cycleRealFavicon();
+</script>
+</body>
+</html>

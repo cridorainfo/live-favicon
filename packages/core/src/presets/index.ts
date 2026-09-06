@@ -1,6 +1,6 @@
 import type { BuiltInFaviconState, PresetRenderer } from "../types";
 import { renderThinking } from "./thinking";
-import { renderLoading, renderProcessing, renderSyncing } from "./spinner";
+import { renderLoading, renderProcessing, renderSyncing, renderPayment } from "./spinner";
 import { renderReconnecting } from "./reconnecting";
 import { renderUploading } from "./upload";
 import { renderDownloading } from "./download";
@@ -11,6 +11,9 @@ import { renderOffline } from "./offline";
 import { renderNotification } from "./notification";
 import { renderMention } from "./mention";
 import { renderMessage } from "./message";
+import { renderAlarm } from "./alarm";
+import { renderCelebration } from "./celebration";
+import { renderQueue } from "./queue";
 
 export type AnimatedState = Exclude<BuiltInFaviconState, "idle">;
 
@@ -37,6 +40,10 @@ export const presets: Record<AnimatedState, Preset> = {
   error: { render: renderError, animated: true, settleAfterMs: 450 },
   warning: { render: renderWarning, animated: false },
   offline: { render: renderOffline, animated: false },
+  alarm: { render: renderAlarm, animated: true },
+  celebration: { render: renderCelebration, animated: true },
+  payment: { render: renderPayment, animated: true },
+  queue: { render: renderQueue, animated: true },
 };
 
 export { makeProgress } from "./progress";

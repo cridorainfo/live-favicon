@@ -22,7 +22,11 @@ export type BuiltInFaviconState =
   | "offline"
   | "notification"
   | "mention"
-  | "message";
+  | "message"
+  | "alarm"
+  | "celebration"
+  | "payment"
+  | "queue";
 
 /**
  * Any built-in state name, or a custom one registered via `favicon.define()`.
