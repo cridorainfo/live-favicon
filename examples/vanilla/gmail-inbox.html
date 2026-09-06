@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>live-favicon — new-mail + OTP demo</title>
+<title>live-favicon — icon + tab title + sound demo</title>
 
 <!-- Production usage (no build step, no npm install):
 <script src="https://unpkg.com/@live-favicon/core"></script>
@@ -19,7 +19,8 @@ For local development in this repo, we load the workspace build instead: -->
     --text: #e7e9ee;
     --muted: #8b93a3;
     --accent: #6366F1;
-    --gmail-red: #EA4335;
+    --tab-bg: #e8eaed;
+    --tab-text: #202124;
   }
   * { box-sizing: border-box; }
   body {
@@ -32,7 +33,7 @@ For local development in this repo, we load the workspace build instead: -->
   main { max-width: 640px; margin: 0 auto; }
   h1 { font-size: 1.4rem; margin: 0 0 4px; }
   p.sub { color: var(--muted); margin: 0 0 8px; line-height: 1.5; }
-  p.disclaimer { color: var(--muted); margin: 0 0 28px; font-size: 0.78rem; line-height: 1.5; }
+  p.disclaimer { color: var(--muted); margin: 0 0 24px; font-size: 0.78rem; line-height: 1.5; }
   section {
     background: var(--card);
     border: 1px solid var(--border);
@@ -65,6 +66,24 @@ For local development in this repo, we load the workspace build instead: -->
   .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
   label.mute { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 0.85rem; cursor: pointer; margin-left: auto; }
 
+  /* A fake browser tab, purely so this page proves what it's doing without
+     you having to alt-tab and squint at the real tab strip. */
+  .tab-strip { background: #d3d6db; border-radius: 10px 10px 0 0; padding: 10px 10px 0; }
+  .tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--tab-bg);
+    color: var(--tab-text);
+    padding: 8px 16px;
+    border-radius: 8px 8px 0 0;
+    font-size: 0.82rem;
+    max-width: 320px;
+  }
+  .tab img { width: 16px; height: 16px; flex-shrink: 0; image-rendering: pixelated; }
+  .tab span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tab-body { background: var(--tab-bg); border-radius: 0 0 10px 10px; padding: 10px 16px; font-size: 0.75rem; color: #5f6368; }
+
   .inbox { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-top: 16px; }
   .mail-row {
     display: flex;
@@ -76,9 +95,8 @@ For local development in this repo, we load the workspace build instead: -->
     animation: pop-in 0.25s ease-out;
   }
   .mail-row:last-child { border-bottom: none; }
-  .mail-row .from { font-weight: 600; width: 130px; flex-shrink: 0; color: var(--gmail-red); }
+  .mail-row .from { font-weight: 600; width: 90px; flex-shrink: 0; }
   .mail-row .subject { color: var(--text); flex: 1; }
-  .mail-row .subject b { font-weight: 700; }
   .mail-row .time { color: var(--muted); font-size: 0.8rem; flex-shrink: 0; }
   .empty { padding: 24px 16px; text-align: center; color: var(--muted); font-size: 0.9rem; }
   @keyframes pop-in {
@@ -86,45 +104,47 @@ For local development in this repo, we load the workspace build instead: -->
     to { opacity: 1; transform: translateY(0); }
   }
 
-  .otp-box { margin-top: 16px; }
-  .otp-box input {
-    width: 100%;
-    background: #1a1e28;
-    border: 1px solid var(--border);
-    color: var(--text);
-    border-radius: 8px;
-    padding: 12px 14px;
-    font-size: 1.4rem;
-    letter-spacing: 0.3em;
-    text-align: center;
-    font-variant-numeric: tabular-nums;
-  }
-  .otp-box input.filled { border-color: #22C55E; color: #22C55E; }
   #status { color: var(--muted); font-size: 0.85rem; min-height: 1.2em; margin-top: 10px; }
 </style>
 </head>
 <body>
 <main>
-  <h1>New mail → icon change + sound + OTP autofill</h1>
+  <h1>Icon, tab title, and sound — all developer-controlled</h1>
   <p class="sub">
-    A minimal inbox simulating what happens when a real email — including a
-    one-time verification code — lands while you're on another tab: the
-    favicon switches to a "new mail" icon, a chime plays, the tab title picks
-    up the unread count, and the code is pulled out of the message body into
-    the field below automatically, the way an OTP-autofill flow would.
+    <code>live-favicon</code> gives you three independent knobs — the icon,
+    <code>document.title</code>, and a sound — and you decide what goes in
+    each, per state you define. A new-mail notification is just one example
+    below: a plain message shows its subject line in the <b>tab title
+    itself</b>; a verification-code email shows the code instead, with a
+    different icon and sound. The same three calls work for a chat DM, a
+    shipped order, a finished build — anything you want visible without the
+    user looking at the page.
   </p>
   <p class="disclaimer">
-    This is a self-contained simulation for demo purposes — it doesn't
-    connect to any real mailbox, and isn't affiliated with or endorsed by
-    Google/Gmail. The red-envelope styling is just a familiar reference
-    point for "new mail."
+    Self-contained simulation — no real mailbox, not affiliated with or
+    endorsed by Google/Gmail. It's here as a familiar example, not a mail
+    integration.
   </p>
+
+  <section>
+    <h2>What the real browser tab shows right now</h2>
+    <p class="hint">Mirrors the actual <code>&lt;link&gt;</code> href and <code>document.title</code> — watch this update as you click below, or switch to the real tab and look there instead.</p>
+    <div class="tab-strip">
+      <div class="tab">
+        <img id="preview-icon" alt="current favicon" />
+        <span id="preview-title">live-favicon — icon + tab title + sound demo</span>
+      </div>
+    </div>
+    <div class="tab-body">This bar is just a mock-up of a browser tab, built from this page's own favicon &amp; title — it isn't a real tab.</div>
+  </section>
 
   <section>
     <h2>1. Receive mail</h2>
     <p class="hint">
-      <code>favicon.define("new-mail", ..., &#123; sound: true &#125;)</code> once, then
-      <code>favicon.state("new-mail")</code> per incoming message.
+      Two states, each with its own icon <em>and</em> sound —
+      <code>favicon.define("new-mail", ..., &#123; sound: true &#125;)</code> uses the
+      built-in chime, <code>favicon.define("new-otp", ..., &#123; sound: "data:audio/wav..." &#125;)</code>
+      uses a different custom tone. The title text is whatever <em>you</em> pass in.
     </p>
     <div class="row">
       <button id="send-plain">Simulate incoming email</button>
@@ -141,15 +161,7 @@ For local development in this repo, we load the workspace build instead: -->
   </section>
 
   <section>
-    <h2>2. Verification code</h2>
-    <p class="hint">Auto-filled the moment a code-carrying email "arrives" — no copy/paste.</p>
-    <div class="otp-box">
-      <input type="text" id="otp-input" placeholder="— — — — — —" readonly />
-    </div>
-  </section>
-
-  <section>
-    <h2>3. Clear</h2>
+    <h2>2. Clear</h2>
     <p class="hint">Reading the inbox restores the original favicon and title.</p>
     <button class="ghost" id="clear-btn">Mark all as read (favicon.reset())</button>
     <div id="status">Idle.</div>
@@ -160,22 +172,37 @@ For local development in this repo, we load the workspace build instead: -->
   const favicon = LiveFavicon.default;
   const { iconBadge } = LiveFavicon;
 
-  // One custom state, defined once: a red envelope glyph with a built-in
-  // chime attached. Nothing here is Gmail-specific — the same pattern works
-  // for a chat mention, a support-ticket reply, or an alarm.
-  favicon.define("new-mail", iconBadge("#EA4335", "✉"), { sound: true });
+  // A short synthesized tone, distinct from the built-in chime, embedded as a
+  // data: URI so this zero-build example doesn't need to ship a real asset.
+  // In a real app this would be a URL to your own sound file.
+  const OTP_TONE = "data:audio/wav;base64,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";
+
+  // Two independently defined states: different icon, different sound. The
+  // title text isn't baked into either — it's set separately per event with
+  // whatever content that event actually carries.
+  favicon.define("new-mail", iconBadge("#4285F4", "✉"), { sound: true });
+  favicon.define("new-otp", iconBadge("#EA4335", "🔑"), { sound: OTP_TONE });
 
   const inboxEl = document.getElementById("inbox");
   const inboxEmptyEl = document.getElementById("inbox-empty");
-  const otpInput = document.getElementById("otp-input");
   const statusEl = document.getElementById("status");
   const muteToggle = document.getElementById("mute-toggle");
+  const previewIcon = document.getElementById("preview-icon");
+  const previewTitle = document.getElementById("preview-title");
 
   let unread = 0;
 
   function setStatus(text) {
     statusEl.textContent = text;
   }
+
+  // Mirror the real <link rel="icon"> + document.title onto the fake tab
+  // above, purely so this page is legible without alt-tabbing.
+  setInterval(() => {
+    const link = document.querySelector('link[data-live-favicon="true"]');
+    if (link && previewIcon.src !== link.href) previewIcon.src = link.href;
+    if (previewTitle.textContent !== document.title) previewTitle.textContent = document.title;
+  }, 100);
 
   muteToggle.addEventListener("change", () => {
     favicon.sound(!muteToggle.checked);
@@ -186,62 +213,46 @@ For local development in this repo, we load the workspace build instead: -->
     return String(Math.floor(100000 + Math.random() * 900000));
   }
 
-  /** Extracts a 6-digit code from a message body — the same regex an
-   *  autofill helper would run against a real email/SMS body. */
-  function extractOtp(body) {
-    const match = body.match(/\b(\d{6})\b/);
-    return match ? match[1] : null;
-  }
-
-  function receiveMail({ from, subject, body }) {
-    unread += 1;
-
+  function addInboxRow(from, subject) {
     if (inboxEmptyEl) inboxEmptyEl.remove();
     const row = document.createElement("div");
     row.className = "mail-row";
-    row.innerHTML = `
-      <span class="from">${from}</span>
-      <span class="subject"><b>${subject}</b></span>
-      <span class="time">now</span>
-    `;
+    row.innerHTML = `<span class="from">${from}</span><span class="subject">${subject}</span><span class="time">now</span>`;
     inboxEl.prepend(row);
-
-    // Icon change + chime, in one call.
-    favicon.state("new-mail");
-    favicon.badge(unread);
-    favicon.title(`(${unread}) Inbox`);
-    setStatus(`favicon.state("new-mail"); favicon.badge(${unread}); favicon.title("(${unread}) Inbox")`);
-
-    const code = extractOtp(body);
-    if (code) {
-      otpInput.value = code;
-      otpInput.classList.add("filled");
-      setStatus(`${statusEl.textContent} — OTP "${code}" extracted from message body and filled in`);
-    }
   }
 
   document.getElementById("send-plain").addEventListener("click", () => {
-    receiveMail({
-      from: "Priya",
-      subject: "Re: Thursday's sync — moved to 3pm",
-      body: "Hey, quick heads up — moved our sync to 3pm, same link. See you there!",
-    });
+    unread += 1;
+    const from = "Priya";
+    const subject = "Re: Thursday's sync — moved to 3pm";
+    addInboxRow(from, subject);
+
+    // The tab title shows this specific email's own content — the sender
+    // and subject line — not a generic "you have mail" placeholder.
+    favicon.state("new-mail");
+    favicon.badge(unread);
+    favicon.title(`${from}: ${subject}`);
+    setStatus(`favicon.state("new-mail"); favicon.badge(${unread}); favicon.title("${from}: ${subject}")`);
   });
 
   document.getElementById("send-otp").addEventListener("click", () => {
+    unread += 1;
     const code = randomOtp();
-    receiveMail({
-      from: "Accounts",
-      subject: "Your verification code",
-      body: `Your one-time verification code is ${code}. It expires in 10 minutes. If you didn't request this, ignore this email.`,
-    });
+    const from = "Accounts";
+    const subject = `Your verification code is ${code}`;
+    addInboxRow(from, subject);
+
+    // Different icon, different sound, AND different title content — this
+    // message's own OTP, not the previous message's subject line.
+    favicon.state("new-otp");
+    favicon.badge(unread);
+    favicon.title(`Your code: ${code}`);
+    setStatus(`favicon.state("new-otp"); favicon.badge(${unread}); favicon.title("Your code: ${code}")`);
   });
 
   document.getElementById("clear-btn").addEventListener("click", () => {
     unread = 0;
     favicon.reset();
-    otpInput.value = "";
-    otpInput.classList.remove("filled");
     setStatus("favicon.reset()");
   });
 </script>

@@ -70,8 +70,10 @@ function onNewMail(message) {
 ```
 
 See [`examples/vanilla/gmail-inbox.html`](../examples/vanilla/gmail-inbox.html)
-for a runnable version of this, including pulling a one-time code out of the
-message body as it "arrives."
+for a runnable version of this with *two* states — a plain message and a
+verification-code email each get their own icon and sound via `define()`,
+and their own `title()` text carrying that message's actual content (a
+subject line, or a one-time code) rather than a generic "you have mail."
 
 ## Browser autoplay limits
 

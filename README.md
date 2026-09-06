@@ -34,7 +34,7 @@ instructions and full API docs.
 ## Examples
 
 - [`examples/vanilla`](./examples/vanilla) — zero-build, plain `<script>` tag usage; a reference page exercising every method
-- [`examples/vanilla/gmail-inbox.html`](./examples/vanilla/gmail-inbox.html) — new-mail icon change + sound + OTP-from-email autofill
+- [`examples/vanilla/gmail-inbox.html`](./examples/vanilla/gmail-inbox.html) — icon, tab title text, and sound as independent per-event, developer-controlled knobs
 - [`examples/react`](./examples/react) — Vite + React + TypeScript, using `@live-favicon/react`
 
 ## Demo
