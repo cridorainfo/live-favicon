@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>live-favicon demo</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⭐</text></svg>" />
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #0b0d12;
+    --card: #12151c;
+    --border: #232733;
+    --text: #e7e9ee;
+    --muted: #8b93a3;
+    --accent: #6366F1;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    padding: 24px;
+  }
+  .card {
+    width: 100%;
+    max-width: 560px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px;
+  }
+  h1 { font-size: 1.5rem; margin: 0 0 4px; }
+  p.sub { color: var(--muted); margin: 0 0 28px; line-height: 1.5; }
+  .step {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 14px;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+  .step b { color: var(--text); }
+  button {
+    margin-top: 16px;
+    width: 100%;
+    padding: 14px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 10px;
+    border: none;
+    background: var(--accent);
+    color: white;
+    cursor: pointer;
+  }
+  button:disabled { opacity: 0.5; cursor: default; }
+  button:not(:disabled):hover { filter: brightness(1.08); }
+  .status {
+    margin-top: 20px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    background: #0000;
+    border: 1px dashed var(--border);
+    font-size: 0.9rem;
+    color: var(--muted);
+    min-height: 20px;
+  }
+  .status.done { color: #22C55E; border-color: #22C55E44; }
+  code {
+    background: #1c2029;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.85em;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>Start the task. Leave the tab.</h1>
+    <p class="sub">
+      <code>live-favicon</code> turns the browser tab into a status indicator.
+      Click start, switch to another tab or window, and watch this one instead.
+    </p>
+
+    <div class="step">1. Click <b>Start task</b>.</div>
+    <div class="step">2. Switch to a different tab or window right away.</div>
+    <div class="step">3. Watch <b>this tab's favicon</b>, not this page.</div>
+
+    <button id="start">Start task</button>
+    <div id="status" class="status">Idle.</div>
+  </div>
+
+  <script src="../dist/index.global.js"></script>
+  <script>
+    const favicon = LiveFavicon.default;
+    const btn = document.getElementById("start");
+    const status = document.getElementById("status");
+
+    function fakeTask() {
+      const steps = [
+        [600, "thinking", "Thinking..."],
+        [900, "processing", "Processing..."],
+        [700, null, null], // progress phase handled separately below
+      ];
+      return new Promise((resolve) => {
+        favicon.state("thinking");
+        favicon.title("Thinking...");
+        status.textContent = "Thinking...";
+
+        setTimeout(() => {
+          favicon.state("processing");
+          favicon.title("Processing...");
+          status.textContent = "Processing...";
+
+          let pct = 0;
+          const tick = setInterval(() => {
+            pct += 12 + Math.random() * 10;
+            if (pct >= 100) {
+              pct = 100;
+              clearInterval(tick);
+              favicon.title(`✓ Complete`);
+              resolve();
+              return;
+            }
+            favicon.progress(pct);
+            favicon.title(`${Math.round(pct)}% — Processing...`);
+            status.textContent = `${Math.round(pct)}% complete...`;
+          }, 260);
+        }, 700);
+      });
+    }
+
+    btn.addEventListener("click", async () => {
+      btn.disabled = true;
+      status.classList.remove("done");
+      await favicon.task(fakeTask(), { start: "thinking", success: "success" });
+      status.textContent = "✓ Task complete. You didn't need to check the page.";
+      status.classList.add("done");
+      btn.disabled = false;
+      setTimeout(() => favicon.reset(), 4000);
+    });
+  </script>
+</body>
+</html>
