@@ -2,10 +2,18 @@ import { Scheduler } from "./core/scheduler";
 import { renderFrame, FAVICON_SIZE } from "./renderer/canvas";
 import { setFaviconDataUrl, resetFavicon } from "./renderer/favicon-link";
 import { setTitle, resetTitle } from "./renderer/title";
-import { presets, makeProgress, type AnimatedState } from "./presets";
-import type { FaviconState, TaskOptions } from "./types";
+import { presets, makeProgress, spinner, pulse, iconBadge, type Preset } from "./presets";
+import type { FaviconState, PresetRenderer, TaskOptions } from "./types";
 
 export type { FaviconState, TaskOptions, RenderContext, PresetRenderer } from "./types";
+export { spinner, pulse, iconBadge };
+
+export interface DefineOptions {
+  /** Whether this state needs a running scheduler, vs. a single static frame. Default: true. */
+  animated?: boolean;
+  /** For a pop-in/settle style animation: stop the scheduler and force a settled frame this long after activation. */
+  settleAfterMs?: number;
+}
 
 function prefersReducedMotion(): boolean {
   return (
@@ -17,12 +25,41 @@ function prefersReducedMotion(): boolean {
 
 class LiveFavicon {
   private readonly scheduler = new Scheduler((elapsedMs) => this.renderCurrent(elapsedMs / 1000));
+  private readonly customPresets = new Map<string, Preset>();
   private currentState: FaviconState = "idle";
   private currentBadge = 0;
   private currentPercent: number | null = null;
   private settleTimer: ReturnType<typeof setTimeout> | null = null;
 
-  /** Switch to a named state. See the exported `FaviconState` union for the full list. */
+  /**
+   * Register a custom state so `favicon.state(name)` (and `task()`'s
+   * `start`/`success`/`error` options) can use it alongside the built-ins.
+   * `renderer` is a `PresetRenderer` — write one by hand, or build one from
+   * the exported kit (`spinner()`, `pulse()`, `iconBadge()`) without
+   * touching canvas at all:
+   *
+   * ```js
+   * favicon.define("researching", spinner("#10A37F"));
+   * favicon.define("blocked", iconBadge("#DC2626", "!"));
+   * favicon.state("researching");
+   * ```
+   *
+   * Throws if `name` collides with a built-in state name (including
+   * "idle") — built-ins can't be redefined.
+   */
+  define(name: string, renderer: PresetRenderer, options: DefineOptions = {}): this {
+    if (name === "idle" || presets[name as keyof typeof presets]) {
+      throw new Error(`live-favicon: "${name}" is a built-in state and can't be redefined via define().`);
+    }
+    this.customPresets.set(name, {
+      render: renderer,
+      animated: options.animated ?? true,
+      settleAfterMs: options.settleAfterMs,
+    });
+    return this;
+  }
+
+  /** Switch to a named state — a built-in one, or one registered via `define()`. */
   state(name: FaviconState): this {
     this.clearSettleTimer();
     this.currentPercent = null;
@@ -34,8 +71,13 @@ class LiveFavicon {
       return this;
     }
 
-    const preset = presets[name as AnimatedState];
-    if (!preset) return this;
+    const preset = this.getPreset(name);
+    if (!preset) {
+      if (typeof console !== "undefined") {
+        console.warn(`live-favicon: unknown state "${name}" — did you forget to call favicon.define("${name}", ...)?`);
+      }
+      return this;
+    }
 
     if (!preset.animated || prefersReducedMotion()) {
       this.scheduler.stop();
@@ -163,7 +205,7 @@ class LiveFavicon {
 
   private renderCurrent(t: number): void {
     if (this.currentPercent !== null || this.currentState === "idle") return;
-    const preset = presets[this.currentState as AnimatedState];
+    const preset = this.getPreset(this.currentState);
     if (!preset) return;
     this.paint(preset.render, t);
   }
@@ -174,8 +216,12 @@ class LiveFavicon {
       return;
     }
     if (this.currentState === "idle") return;
-    const preset = presets[this.currentState as AnimatedState];
+    const preset = this.getPreset(this.currentState);
     if (preset && !preset.animated) this.paint(preset.render, 0);
+  }
+
+  private getPreset(name: string): Preset | undefined {
+    return presets[name as keyof typeof presets] ?? this.customPresets.get(name);
   }
 
   private paint(render: Parameters<typeof renderFrame>[0], t: number): void {

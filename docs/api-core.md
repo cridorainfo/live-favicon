@@ -101,6 +101,65 @@ try {
 }
 ```
 
+## `favicon.define(name, renderer, options?)`
+
+```ts
+favicon.define(name: string, renderer: PresetRenderer, options?: DefineOptions): this
+
+interface DefineOptions {
+  animated?: boolean;      // default true
+  settleAfterMs?: number;  // see below
+}
+```
+
+Registers a custom state so `favicon.state(name)` — and `task()`'s `start`
+/`success`/`error` options — can use it alongside the built-ins. `renderer`
+is a `PresetRenderer`: `({ ctx, size, t }) => { ...draw... }`, the same
+signature every built-in preset uses internally.
+
+You don't have to write canvas code to use this. Three composable builders
+are exported for the common shapes:
+
+```ts
+function spinner(color: string): PresetRenderer;                                   // rotating arc — the loading/processing/syncing shape
+function pulse(color: string): PresetRenderer;                                     // expanding, fading ring — the notification shape
+function iconBadge(color: string, glyph: string, options?: { textColor?: string }): PresetRenderer;  // solid circle + centered glyph — the warning shape
+```
+
+```js
+import favicon, { spinner, iconBadge } from "@live-favicon/core";
+
+favicon.define("researching", spinner("#10A37F"));       // your brand color
+favicon.define("blocked", iconBadge("#DC2626", "!"));
+favicon.define("brand-mark", iconBadge("#111827", "A"), { animated: false });
+
+favicon.state("researching");
+```
+
+For anything the kit doesn't cover, write a `PresetRenderer` directly — it's
+plain Canvas 2D, and `t` is seconds elapsed since the state became active
+(loops for continuous animations, per [background-tabs.md](./background-tabs.md)):
+
+```ts
+favicon.define("custom", ({ ctx, size, t }) => {
+  ctx.fillStyle = "#111827";
+  ctx.beginPath();
+  ctx.arc(size / 2, size / 2, size * 0.3 + Math.sin(t * 4) * 4, 0, Math.PI * 2);
+  ctx.fill();
+});
+```
+
+`settleAfterMs` is for a pop-in-then-hold animation like `success`/`error`:
+when set, the scheduler force-paints a frame at `t = 1` (past any reasonable
+pop-in duration) and stops, exactly `settleAfterMs` after activation — see
+the comment in `index.ts`'s `state()` for why a naive "just stop the
+scheduler" doesn't work reliably in a background tab.
+
+`define()` throws if `name` collides with a built-in state name (including
+`"idle"`) — built-ins can't be redefined. Calling `state()` with a name
+that was never `define()`'d logs a console warning and does nothing,
+rather than failing silently.
+
 ## `favicon.reset()`
 
 ```ts
@@ -116,12 +175,17 @@ component unmounts, or a long-running session ends.
 ## Types
 
 ```ts
-type FaviconState =
+type BuiltInFaviconState =
   | "idle"
   | "thinking" | "loading" | "processing" | "syncing" | "reconnecting"
   | "uploading" | "downloading"
   | "notification" | "mention" | "message"
   | "success" | "error" | "warning" | "offline";
+
+// FaviconState accepts any BuiltInFaviconState, or any string — so a name
+// registered with define() type-checks too, while the built-ins still show
+// up in editor autocomplete.
+type FaviconState = BuiltInFaviconState | (string & {});
 ```
 
 `FAVICON_SIZE` (currently `64`) is the pixel size `live-favicon` renders at

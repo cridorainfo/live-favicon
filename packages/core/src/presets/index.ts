@@ -1,4 +1,4 @@
-import type { FaviconState, PresetRenderer } from "../types";
+import type { BuiltInFaviconState, PresetRenderer } from "../types";
 import { renderThinking } from "./thinking";
 import { renderLoading, renderProcessing, renderSyncing } from "./spinner";
 import { renderReconnecting } from "./reconnecting";
@@ -12,9 +12,9 @@ import { renderNotification } from "./notification";
 import { renderMention } from "./mention";
 import { renderMessage } from "./message";
 
-export type AnimatedState = Exclude<FaviconState, "idle">;
+export type AnimatedState = Exclude<BuiltInFaviconState, "idle">;
 
-interface Preset {
+export interface Preset {
   render: PresetRenderer;
   /** Whether this preset needs a running scheduler, vs. a single static frame. */
   animated: boolean;
@@ -40,3 +40,4 @@ export const presets: Record<AnimatedState, Preset> = {
 };
 
 export { makeProgress } from "./progress";
+export { spinner, pulse, iconBadge } from "./kit";

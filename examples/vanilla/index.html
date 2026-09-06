@@ -118,6 +118,21 @@ For local development in this repo, we load the workspace build instead: -->
   </section>
 
   <section>
+    <h2>Your own state</h2>
+    <p class="hint"><code>favicon.define(name, renderer)</code> — build one from the kit, no canvas code needed</p>
+    <div class="row">
+      <input type="color" id="custom-color" value="#10a37f" />
+      <select id="custom-shape">
+        <option value="spinner">spinner</option>
+        <option value="pulse">pulse</option>
+        <option value="iconBadge">iconBadge</option>
+      </select>
+      <input type="text" id="custom-glyph" placeholder="glyph (iconBadge only)" value="!" style="max-width:140px" />
+      <button class="primary" id="custom-define-btn">Define &amp; preview</button>
+    </div>
+  </section>
+
+  <section>
     <h2>Progress</h2>
     <p class="hint"><code>favicon.progress(percent)</code></p>
     <div class="row">
@@ -177,6 +192,22 @@ For local development in this repo, we load the workspace build instead: -->
   function setStatus(text) {
     statusEl.textContent = text;
   }
+
+  const { spinner, pulse, iconBadge } = LiveFavicon;
+  document.getElementById("custom-define-btn").addEventListener("click", () => {
+    const color = document.getElementById("custom-color").value;
+    const shape = document.getElementById("custom-shape").value;
+    const glyph = document.getElementById("custom-glyph").value || "!";
+
+    const renderer =
+      shape === "spinner" ? spinner(color) :
+      shape === "pulse" ? pulse(color) :
+      iconBadge(color, glyph);
+
+    favicon.define("custom-demo", renderer, { animated: shape !== "iconBadge" });
+    favicon.state("custom-demo");
+    setStatus(`favicon.define("custom-demo", ${shape}(${JSON.stringify(color)}${shape === "iconBadge" ? `, ${JSON.stringify(glyph)}` : ""})); favicon.state("custom-demo")`);
+  });
 
   // Mirror the actual <link rel="icon"> href onto a visible <img>, purely so
   // this page is useful without staring at the tiny real tab favicon.

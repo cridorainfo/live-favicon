@@ -7,7 +7,7 @@ export interface RenderContext {
 
 export type PresetRenderer = (rc: RenderContext) => void;
 
-export type FaviconState =
+export type BuiltInFaviconState =
   | "idle"
   | "thinking"
   | "loading"
@@ -23,6 +23,14 @@ export type FaviconState =
   | "notification"
   | "mention"
   | "message";
+
+/**
+ * Any built-in state name, or a custom one registered via `favicon.define()`.
+ * The `string & {}` half is a TS trick that keeps editor autocomplete for the
+ * built-ins while still accepting an arbitrary string — a plain `string`
+ * union would silently swallow the autocomplete for the literals above.
+ */
+export type FaviconState = BuiltInFaviconState | (string & {});
 
 export interface TaskOptions {
   /** state to show while the task is in flight. Default: "thinking" */

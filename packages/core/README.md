@@ -102,6 +102,22 @@ error handling still runs.
 
 Call any of them directly (`favicon.success()`) or via `favicon.state("success")`.
 
+### Your own states
+
+Register a custom one with `define()` — no canvas code required, using the
+exported `spinner()` / `pulse()` / `iconBadge()` kit:
+
+```js
+import favicon, { spinner, iconBadge } from "@live-favicon/core";
+
+favicon.define("researching", spinner("#10A37F"));   // your brand color
+favicon.define("blocked", iconBadge("#DC2626", "!"));
+
+favicon.state("researching");
+```
+
+See [docs/api-core.md](../../docs/api-core.md#favicondefinename-renderer-options) for the full `define()` reference, including writing a raw renderer for anything the kit doesn't cover.
+
 ## API
 
 ```ts
@@ -109,6 +125,8 @@ favicon.state(name: FaviconState): this
 favicon.thinking() / .loading() / .processing() / .syncing() / .reconnecting() /
   .uploading() / .downloading() / .success() / .error() / .warning() /
   .offline() / .notification() / .mention() / .message(): this
+
+favicon.define(name: string, renderer: PresetRenderer, options?: DefineOptions): this  // register a custom state
 
 favicon.progress(percent: number): this   // 0-100, clamped
 favicon.badge(count: number): this        // overlays a numeric badge

@@ -212,6 +212,46 @@
     width: 44px; height: 44px; border-radius: 50%;
     background: var(--yellow-soft); border: 2px solid var(--border);
   }
+
+  /* ---------- Showcase cards ---------- */
+  .showcase-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 20px;
+    margin-top: 40px;
+  }
+  .showcase-card {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+  }
+  .showcase-tab {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg-alt);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-bottom: 14px;
+  }
+  .showcase-tab canvas { width: 22px; height: 22px; flex-shrink: 0; }
+  .showcase-tab-label { font-size: 0.8rem; font-weight: 600; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .showcase-card h3 { font-size: 1rem; margin-bottom: 6px; }
+  .showcase-caption { color: var(--muted); font-size: 0.85rem; font-weight: 500; margin: 0; line-height: 1.5; }
+  .showcase-stage {
+    display: inline-block;
+    margin-top: 12px;
+    font-family: ui-monospace, monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 2px solid var(--border);
+    background: var(--yellow-soft);
+  }
   .card h3 { font-size: 1.05rem; margin-bottom: 8px; }
   .card p { color: var(--muted); font-size: 0.92rem; font-weight: 500; margin: 0; }
 
@@ -292,6 +332,7 @@
       live-favicon
     </a>
     <nav>
+      <a href="#showcase">Showcase</a>
       <a href="#presets">Presets</a>
       <a href="#demo">Demo</a>
       <a href="#get-started">Get started</a>
@@ -369,6 +410,22 @@
           <p>A new message or mention updates the tab immediately — no polling, no missed pings.</p>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- ============ SHOWCASE ============ -->
+  <section id="showcase" class="tight">
+    <div class="wrap">
+      <p class="eyebrow">How real apps would use this</p>
+      <h2>Every card below is live — and running on its own state.</h2>
+      <p class="section-sub">
+        Not mockups: each little tab icon is rendered right now, in your
+        browser, from the exact same <code>spinner()</code> / <code>iconBadge()</code>
+        building blocks any app can <code>favicon.define()</code> for
+        themselves — cycling through what that product's own real waiting
+        moment looks like.
+      </p>
+      <div class="showcase-grid" id="showcase-grid"></div>
     </div>
   </section>
 
@@ -521,6 +578,166 @@ useFaviconState(status === <span class="str">"done"</span> ? <span class="str">"
 <script src="assets/js/live-favicon.global.js"></script>
 <script>
   const favicon = LiveFavicon.default;
+  const { spinner, iconBadge } = LiveFavicon;
+
+  // ---- Showcase cards ----
+  // Each card gets its own <canvas> and drives it directly with the exact
+  // same exported spinner()/iconBadge() functions favicon.define() uses —
+  // no data-URL favicon involved, since only one of those can exist per
+  // page. This is what it looks like to build one of these for real.
+  const BRAND_GREEN_CHATGPT = "#10A37F";
+  const BRAND_CLAY_CLAUDE = "#D97757";
+  const BRAND_RED_YOUTUBE = "#FF0000";
+  const BRAND_PURPLE_FIGMA = "#A259FF";
+  const BRAND_PURPLE_CANVA = "#8B3DFF";
+  const BRAND_INK_GITHUB = "#24292F";
+  const BRAND_INK_VERCEL = "#000000";
+  const BRAND_INK_NOTION = "#37352F";
+  const BRAND_BLUE_DROPBOX = "#0061FF";
+  const BRAND_BLUE_ZOOM = "#2D8CFF";
+  const SUCCESS_GREEN = "#1DB954";
+
+  const SHOWCASE = [
+    {
+      name: "ChatGPT",
+      caption: "Ask a question, switch tabs — know the instant the answer's ready, without checking back.",
+      stages: [
+        { label: "Thinking...", hold: 1800, renderer: spinner(BRAND_GREEN_CHATGPT) },
+        { label: "Answer ready", hold: 1400, renderer: iconBadge(BRAND_GREEN_CHATGPT, "✓") },
+      ],
+    },
+    {
+      name: "Claude",
+      caption: "Extended thinking and tool use can run for a while — the tab could carry that status instead of the chat window.",
+      stages: [
+        { label: "Thinking...", hold: 1600, renderer: spinner(BRAND_CLAY_CLAUDE) },
+        { label: "Using tools...", hold: 1600, renderer: spinner(BRAND_CLAY_CLAUDE) },
+        { label: "Ready", hold: 1400, renderer: iconBadge(BRAND_CLAY_CLAUDE, "✓") },
+      ],
+    },
+    {
+      name: "YouTube",
+      caption: "\"Processing HD versions\" can run for minutes — creators tab away and forget to check back.",
+      stages: [
+        { label: "Uploading...", hold: 1600, renderer: spinner(BRAND_RED_YOUTUBE) },
+        { label: "Processing...", hold: 1600, renderer: spinner(BRAND_RED_YOUTUBE) },
+        { label: "Ready to watch", hold: 1400, renderer: iconBadge(BRAND_RED_YOUTUBE, "▶") },
+      ],
+    },
+    {
+      name: "GitHub",
+      caption: "CI runs and PR checks are pure watch-and-wait — the outcome matters more than anything else on the page.",
+      stages: [
+        { label: "Running checks...", hold: 1800, renderer: spinner(BRAND_INK_GITHUB) },
+        { label: "Checks passed", hold: 1400, renderer: iconBadge(SUCCESS_GREEN, "✓") },
+      ],
+    },
+    {
+      name: "Vercel",
+      caption: "A build+deploy takes 30s–3min — and the audience watching is developers, who'd get this instantly.",
+      stages: [
+        { label: "Building...", hold: 1800, renderer: spinner(BRAND_INK_VERCEL) },
+        { label: "Deployed", hold: 1400, renderer: iconBadge(SUCCESS_GREEN, "✓") },
+      ],
+    },
+    {
+      name: "Figma",
+      caption: "Exporting a large board takes real time — the on-canvas \"Saving...\" indicator disappears the moment you tab away.",
+      stages: [
+        { label: "Rendering export...", hold: 1800, renderer: spinner(BRAND_PURPLE_FIGMA) },
+        { label: "Export ready", hold: 1400, renderer: iconBadge(BRAND_PURPLE_FIGMA, "✓") },
+      ],
+    },
+    {
+      name: "Canva",
+      caption: "Video and print exports commonly run past a minute — people switch to email or social while \"Preparing your download\" runs.",
+      stages: [
+        { label: "Preparing...", hold: 1800, renderer: spinner(BRAND_PURPLE_CANVA) },
+        { label: "Download ready", hold: 1400, renderer: iconBadge(BRAND_PURPLE_CANVA, "✓") },
+      ],
+    },
+    {
+      name: "Notion",
+      caption: "Notion AI drafts take several seconds to a minute — right now there's no way to know it's done without looking back.",
+      stages: [
+        { label: "Generating...", hold: 1800, renderer: spinner(BRAND_INK_NOTION) },
+        { label: "Draft ready", hold: 1400, renderer: iconBadge(BRAND_INK_NOTION, "✓") },
+      ],
+    },
+    {
+      name: "Dropbox",
+      caption: "The canonical case: a large upload or sync running in a tab nobody's watching anymore.",
+      stages: [
+        { label: "Syncing...", hold: 1800, renderer: spinner(BRAND_BLUE_DROPBOX) },
+        { label: "Synced", hold: 1400, renderer: iconBadge(BRAND_BLUE_DROPBOX, "✓") },
+      ],
+    },
+    {
+      name: "Zoom",
+      caption: "\"Your recording is processing\" can run 10–30+ minutes — hosts forget the tab entirely.",
+      stages: [
+        { label: "Processing recording...", hold: 2000, renderer: spinner(BRAND_BLUE_ZOOM) },
+        { label: "Ready to share", hold: 1400, renderer: iconBadge(BRAND_BLUE_ZOOM, "✓") },
+      ],
+    },
+  ];
+
+  function buildShowcaseCard(company) {
+    const card = document.createElement("div");
+    card.className = "showcase-card";
+    card.innerHTML = `
+      <div class="showcase-tab">
+        <canvas width="32" height="32"></canvas>
+        <span class="showcase-tab-label">${company.name}</span>
+      </div>
+      <h3>${company.name}</h3>
+      <p class="showcase-caption">${company.caption}</p>
+      <span class="showcase-stage"></span>
+    `;
+    const canvas = card.querySelector("canvas");
+    const stageLabel = card.querySelector(".showcase-stage");
+    driveShowcaseCard(canvas, stageLabel, company.stages);
+    return card;
+  }
+
+  function driveShowcaseCard(canvas, stageLabel, stages) {
+    const ctx = canvas.getContext("2d");
+    const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
+    if (reduceMotion) {
+      // Respect it here too, same as the library itself does for the real
+      // favicon — show the resolved (final) stage as a single static frame.
+      const last = stages[stages.length - 1];
+      ctx.clearRect(0, 0, 32, 32);
+      last.renderer({ ctx, size: 32, t: 1 });
+      stageLabel.textContent = last.label;
+      return;
+    }
+
+    let stageIndex = 0;
+    let stageStartMs = performance.now();
+    stageLabel.textContent = stages[0].label;
+
+    function frame(now) {
+      const stage = stages[stageIndex];
+      const elapsedMs = now - stageStartMs;
+      ctx.clearRect(0, 0, 32, 32);
+      stage.renderer({ ctx, size: 32, t: elapsedMs / 1000 });
+
+      if (elapsedMs >= stage.hold) {
+        stageIndex = (stageIndex + 1) % stages.length;
+        stageStartMs = now;
+        stageLabel.textContent = stages[stageIndex].label;
+      }
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  const showcaseGrid = document.getElementById("showcase-grid");
+  for (const company of SHOWCASE) {
+    showcaseGrid.appendChild(buildShowcaseCard(company));
+  }
 
   // ---- Copy install command ----
   const copyBtn = document.getElementById("copy-install");
